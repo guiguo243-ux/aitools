@@ -1,0 +1,46 @@
+{
+  "name": "ai-video-editor",
+  "version": "1.0.0",
+  "description": "AI智能视频编辑小程序",
+  "private": true,
+  "scripts": {
+    "dev:weapp": "npm run build:weapp -- --watch",
+    "build:weapp": "taro build --type weapp",
+    "dev:h5": "taro build --type h5 --watch",
+    "build:h5": "taro build --type h5",
+    "lint": "eslint --ext .js,.jsx,.ts,.tsx src",
+    "test": "jest"
+  },
+  "dependencies": {
+    "@tarojs/components": "^3.6.27",
+    "@tarojs/plugin-framework-react": "^3.6.27",
+    "@tarojs/plugin-platform-h5": "^4.1.11",
+    "@tarojs/plugin-platform-weapp": "^3.6.27",
+    "@tarojs/react": "^3.6.27",
+    "@tarojs/runtime": "^3.6.27",
+    "@tarojs/taro": "^3.6.27",
+    "dayjs": "^1.11.10",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "zustand": "^4.4.7"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.23.6",
+    "@tarojs/cli": "^3.6.27",
+    "@tarojs/webpack5-runner": "^3.6.39",
+    "@types/react": "^18.2.45",
+    "@typescript-eslint/eslint-plugin": "^6.15.0",
+    "@typescript-eslint/parser": "^6.15.0",
+    "babel-preset-taro": "^3.6.27",
+    "eslint": "^8.56.0",
+    "eslint-config-taro": "^3.6.27",
+    "eslint-plugin-react": "^7.33.2",
+    "typescript": "^5.3.3",
+    "webpack": "^5.89.0"
+  },
+  "browserslist": [
+    "last 3 versions",
+    "Android >= 10",
+    "ios >= 13"
+  ]
+}

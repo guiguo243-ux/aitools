@@ -1,0 +1,281 @@
+.vip-page {
+  min-height: 100vh;
+  background-color: #000000;
+  display: flex;
+  flex-direction: column;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  background-color: transparent;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 10;
+}
+
+.back-btn {
+  background: rgba(0, 0, 0, 0.5);
+  color: #FFFFFF;
+  font-size: 20px;
+  padding: 8px 16px;
+  margin: 0;
+  border: none;
+  border-radius: 20px;
+}
+
+.title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #FFFFFF;
+}
+
+.vip-content {
+  flex: 1;
+  padding-bottom: 80px;
+}
+
+.vip-banner {
+  background: linear-gradient(135deg, #FFD700, #FFA500);
+  padding: 80px 24px 40px;
+  text-align: center;
+}
+
+.banner-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.vip-badge {
+  background: linear-gradient(135deg, #000000, #333333);
+  padding: 8px 24px;
+  border-radius: 20px;
+  margin-bottom: 16px;
+}
+
+.vip-badge Text {
+  font-size: 16px;
+  font-weight: 700;
+  color: #FFD700;
+}
+
+.banner-title {
+  font-size: 28px;
+  font-weight: 700;
+  color: #000000;
+  margin-bottom: 8px;
+}
+
+.banner-desc {
+  font-size: 14px;
+  color: rgba(0, 0, 0, 0.6);
+}
+
+.plans-section {
+  padding: 24px 16px;
+}
+
+.section-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #FFFFFF;
+  display: block;
+  margin-bottom: 16px;
+}
+
+.plans-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+
+.plan-card {
+  background-color: #1A1A1A;
+  border-radius: 12px;
+  padding: 16px;
+  position: relative;
+  border: 2px solid transparent;
+}
+
+.plan-card.selected {
+  border-color: #FFD700;
+}
+
+.plan-card.popular {
+  border-color: #FFD700;
+}
+
+.plan-badge {
+  position: absolute;
+  top: -8px;
+  right: 8px;
+  background: linear-gradient(135deg, #EF4444, #F97316);
+  padding: 2px 8px;
+  border-radius: 8px;
+}
+
+.plan-badge Text {
+  font-size: 10px;
+  color: #FFFFFF;
+  font-weight: 600;
+}
+
+.popular-badge {
+  position: absolute;
+  top: -8px;
+  left: 8px;
+  background: linear-gradient(135deg, #FFD700, #FFA500);
+  padding: 2px 8px;
+  border-radius: 8px;
+}
+
+.popular-badge Text {
+  font-size: 10px;
+  color: #000000;
+  font-weight: 600;
+}
+
+.plan-label {
+  font-size: 16px;
+  font-weight: 600;
+  color: #FFFFFF;
+  display: block;
+  margin-bottom: 8px;
+}
+
+.plan-prices {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.plan-price {
+  font-size: 24px;
+  font-weight: 700;
+  color: #FFD700;
+}
+
+.plan-original {
+  font-size: 14px;
+  color: #525252;
+  text-decoration: line-through;
+}
+
+.plan-check {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 20px;
+  height: 20px;
+  background-color: #FFD700;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  color: #000000;
+}
+
+.features-section {
+  padding: 0 16px 24px;
+}
+
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+
+.feature-item {
+  display: flex;
+  align-items: center;
+  background-color: #1A1A1A;
+  border-radius: 12px;
+  padding: 16px;
+}
+
+.feature-icon {
+  font-size: 24px;
+  margin-right: 12px;
+}
+
+.feature-info {
+  flex: 1;
+}
+
+.feature-title {
+  font-size: 14px;
+  font-weight: 500;
+  color: #FFFFFF;
+  display: block;
+}
+
+.feature-desc {
+  font-size: 12px;
+  color: #A3A3A3;
+  margin-top: 2px;
+  display: block;
+}
+
+.tips-section {
+  padding: 0 16px 24px;
+}
+
+.tips-title {
+  font-size: 14px;
+  color: #A3A3A3;
+  display: block;
+  margin-bottom: 8px;
+}
+
+.tips-text {
+  font-size: 12px;
+  color: #525252;
+  display: block;
+  margin-bottom: 4px;
+}
+
+.footer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px;
+  background-color: #1A1A1A;
+  border-top: 1px solid #262626;
+}
+
+.price-info {
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+}
+
+.price-label {
+  font-size: 14px;
+  color: #A3A3A3;
+}
+
+.price-value {
+  font-size: 24px;
+  font-weight: 700;
+  color: #FFD700;
+}
+
+.purchase-btn {
+  background: linear-gradient(135deg, #FFD700, #FFA500);
+  color: #000000;
+  font-size: 16px;
+  font-weight: 600;
+  padding: 14px 40px;
+  border-radius: 24px;
+  border: none;
+}

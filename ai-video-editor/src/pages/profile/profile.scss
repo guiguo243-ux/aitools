@@ -1,0 +1,212 @@
+.profile-page {
+  min-height: 100vh;
+  background-color: #000000;
+}
+
+.profile-header {
+  background: linear-gradient(135deg, #1D4ED8, #7C3AED);
+  padding: 48px 16px 24px;
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+}
+
+.avatar {
+  width: 72px;
+  height: 72px;
+  background-color: rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  margin-right: 16px;
+}
+
+.avatar-icon {
+  font-size: 36px;
+}
+
+.vip-badge {
+  position: absolute;
+  bottom: -4px;
+  right: -4px;
+  background: linear-gradient(135deg, #FFD700, #FFA500);
+  padding: 2px 8px;
+  border-radius: 8px;
+}
+
+.vip-badge Text {
+  font-size: 10px;
+  color: #000;
+  font-weight: 700;
+}
+
+.user-detail {
+  flex: 1;
+}
+
+.nickname {
+  font-size: 20px;
+  font-weight: 600;
+  color: #FFFFFF;
+  display: block;
+  margin-bottom: 8px;
+}
+
+.level-badge {
+  display: inline-block;
+  background: linear-gradient(135deg, #FFD700, #FFA500);
+  padding: 4px 12px;
+  border-radius: 12px;
+}
+
+.level-text {
+  font-size: 12px;
+  color: #000;
+  font-weight: 600;
+}
+
+.stats-card {
+  display: flex;
+  justify-content: space-around;
+  background-color: #1A1A1A;
+  margin: -12px 16px 16px;
+  padding: 20px;
+  border-radius: 16px;
+  position: relative;
+}
+
+.stat-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.stat-value {
+  font-size: 20px;
+  font-weight: 600;
+  color: #FFFFFF;
+}
+
+.stat-label {
+  font-size: 12px;
+  color: #A3A3A3;
+  margin-top: 4px;
+}
+
+.points-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #1A1A1A;
+  margin: 0 16px 16px;
+  padding: 16px 20px;
+  border-radius: 12px;
+}
+
+.points-info {
+  display: flex;
+  align-items: center;
+}
+
+.points-label {
+  font-size: 14px;
+  color: #A3A3A3;
+  margin-right: 8px;
+}
+
+.points-value {
+  font-size: 20px;
+  font-weight: 600;
+  color: #FFD700;
+}
+
+.points-action {
+  background: linear-gradient(135deg, #FFD700, #FFA500);
+  padding: 8px 20px;
+  border-radius: 16px;
+}
+
+.action-text {
+  font-size: 14px;
+  color: #000;
+  font-weight: 600;
+}
+
+.vip-banner {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: linear-gradient(135deg, #2563EB, #7C3AED);
+  margin: 0 16px 16px;
+  padding: 20px;
+  border-radius: 12px;
+}
+
+.banner-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #FFFFFF;
+  display: block;
+}
+
+.banner-desc {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.8);
+  margin-top: 4px;
+  display: block;
+}
+
+.banner-btn {
+  background-color: #FFD700;
+  padding: 8px 20px;
+  border-radius: 16px;
+}
+
+.banner-btn Text {
+  font-size: 14px;
+  color: #000;
+  font-weight: 600;
+}
+
+.menu-section {
+  background-color: #1A1A1A;
+  margin: 0 16px;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.menu-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 20px;
+  border-bottom: 1px solid #262626;
+}
+
+.menu-item:last-child {
+  border-bottom: none;
+}
+
+.menu-left {
+  display: flex;
+  align-items: center;
+}
+
+.menu-icon {
+  font-size: 20px;
+  margin-right: 12px;
+}
+
+.menu-label {
+  font-size: 14px;
+  color: #FFFFFF;
+}
+
+.menu-arrow {
+  font-size: 14px;
+  color: #525252;
+}

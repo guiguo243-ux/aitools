@@ -1,0 +1,93 @@
+.batch-generate {
+  min-height: 100vh;
+  background: #0A0A0C;
+  color: #FFFFFF;
+
+  .header { padding: 60px 20px 20px; }
+  .header-title { font-size: 28px; font-weight: 700; }
+
+  .content { padding: 20px; }
+
+  .intro-card {
+    background: linear-gradient(135deg, #1C1C1E, #2C2C2E);
+    border-radius: 20px;
+    padding: 32px;
+    text-align: center;
+    margin-bottom: 24px;
+  }
+  .intro-icon { font-size: 48px; margin-bottom: 12px; }
+  .intro-title { font-size: 20px; font-weight: 600; margin-bottom: 8px; }
+  .intro-desc { font-size: 14px; color: #8E8E93; }
+
+  .section { margin-bottom: 24px; }
+  .section-title { font-size: 16px; font-weight: 600; margin-bottom: 12px; }
+
+  .template-select {
+    background: #1C1C1E;
+    border-radius: 12px;
+    padding: 20px;
+    text-align: center;
+    border: 2px dashed #3A3A3C;
+  }
+
+  .count-input {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    background: #1C1C1E;
+    border-radius: 12px;
+    padding: 16px;
+  }
+  .count-btn {
+    width: 44px; height: 44px;
+    background: #2C2C2E;
+    border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 24px;
+  }
+  .count-value {
+    flex: 1; text-align: center; font-size: 24px; font-weight: 600;
+  }
+  .count-hint { font-size: 12px; color: #636366; margin-top: 8px; }
+
+  .content-list { background: #1C1C1E; border-radius: 12px; padding: 8px 0; }
+  .content-item { padding: 12px 16px; font-size: 14px; }
+
+  .generate-btn {
+    background: linear-gradient(135deg, #007AFF, #5AC8FA);
+    color: #FFFFFF;
+    text-align: center;
+    padding: 16px;
+    border-radius: 14px;
+    font-size: 17px;
+    font-weight: 600;
+  }
+
+  .results-section { margin-top: 24px; }
+  .results-title { font-size: 16px; font-weight: 600; margin-bottom: 12px; }
+  .result-item {
+    display: flex; align-items: center;
+    background: #1C1C1E;
+    border-radius: 12px;
+    padding: 14px 16px;
+    margin-bottom: 8px;
+  }
+  .result-icon { margin-right: 12px; }
+  .result-name { flex: 1; }
+  .result-action { color: #007AFF; font-size: 14px; }
+
+  .progress-overlay {
+    position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.9);
+    display: flex; align-items: center; justify-content: center;
+  }
+  .progress-box {
+    width: 280px; background: #1C1C1E;
+    border-radius: 20px; padding: 32px; text-align: center;
+  }
+  .progress-title { font-size: 18px; font-weight: 600; margin-bottom: 20px; }
+  .progress-bar {
+    height: 8px; background: #2C2C2E; border-radius: 4px; overflow: hidden; margin-bottom: 12px;
+  }
+  .progress-fill { height: 100%; background: #007AFF; }
+}

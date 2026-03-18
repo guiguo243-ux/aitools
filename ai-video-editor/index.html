@@ -1,0 +1,2218 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>智剪AI</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+      --primary: #007AFF;
+      --primary-light: #5AC8FA;
+      --bg: #000000;
+      --bg-secondary: #1C1C1E;
+      --bg-tertiary: #2C2C2E;
+      --text: #FFFFFF;
+      --text-secondary: #8E8E93;
+      --text-tertiary: #636366;
+      --separator: #38383A;
+      --green: #30D158;
+      --orange: #FF9F0A;
+      --red: #FF453A;
+    }
+    html, body { height: 100%; }
+    body { 
+      font-family: -apple-system, BlinkMacSystemFont, 'SF Pro', sans-serif; 
+      background: var(--bg); 
+      color: var(--text); 
+      font-size: 17px;
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+    }
+    .container { max-width: 430px; margin: 0 auto; min-height: 100vh; background: var(--bg); position: relative; padding-bottom: 83px; }
+    .page { display: none; min-height: 100vh; }
+    .page.active { display: block; }
+    
+    /* Header */
+    .header { padding: 60px 20px 20px; display: flex; align-items: center; justify-content: space-between; }
+    .header-title { font-size: 34px; font-weight: 700; letter-spacing: -0.5px; }
+    .back-btn { width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; font-size: 24px; color: var(--primary); }
+    
+    /* Tab Bar */
+    .tab-bar { 
+      position: fixed; bottom: 0; left: 0; right: 0; 
+      max-width: 430px; margin: 0 auto;
+      height: 83px; background: rgba(28,28,30,0.95);
+      backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+      border-top: 0.5px solid var(--separator);
+      display: flex; align-items: center; justify-content: space-around;
+    }
+    .tab-item { display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 10px 16px; }
+    .tab-icon { font-size: 24px; }
+    .tab-label { font-size: 10px; color: var(--text-tertiary); }
+    .tab-item.active .tab-label { color: var(--primary); }
+
+    /* Cards */
+    .card { background: var(--bg-secondary); border-radius: 20px; padding: 20px; margin: 0 20px 16px; }
+    .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+    .card-title { font-size: 20px; font-weight: 600; }
+    .card-more { font-size: 15px; color: var(--primary); }
+
+    /* Buttons */
+    .btn { 
+      background: var(--bg-tertiary); color: var(--text); 
+      border: none; border-radius: 12px; padding: 14px 20px;
+      font-size: 17px; font-weight: 500; text-align: center; display: block;
+    }
+    .btn-primary { background: var(--primary); color: white; }
+    .btn-full { width: calc(100% - 40px); margin: 0 20px; }
+
+    /* Grid */
+    .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+    .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+
+    /* Home */
+    .hero { 
+      margin: 0 20px 24px; padding: 32px 24px;
+      background: linear-gradient(135deg, #1C1C1E 0%, #2C2C2E 100%);
+      border-radius: 24px; position: relative; overflow: hidden;
+    }
+    .hero::before {
+      content: ''; position: absolute; top: -50%; right: -50%;
+      width: 100%; height: 100%;
+      background: radial-gradient(circle, rgba(0,122,255,0.15) 0%, transparent 60%);
+    }
+    .hero-title { font-size: 28px; font-weight: 700; margin-bottom: 8px; position: relative; }
+    .hero-desc { font-size: 15px; color: var(--text-secondary); position: relative; }
+    .hero-icon { position: absolute; right: 20px; top: 50%; transform: translateY(-50%); font-size: 48px; opacity: 0.8; }
+
+    .section { margin-bottom: 24px; }
+    .section-header { display: flex; justify-content: space-between; align-items: center; padding: 0 20px; margin-bottom: 12px; }
+    .section-title { font-size: 22px; font-weight: 700; }
+    .section-more { font-size: 15px; color: var(--primary); }
+
+    .quick-item { 
+      background: var(--bg-secondary); border-radius: 16px; 
+      padding: 16px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 8px;
+    }
+    .quick-icon { width: 48px; height: 48px; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 24px; }
+    .quick-label { font-size: 13px; color: var(--text-secondary); }
+
+    /* AI Tools */
+    .ai-tools-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; padding: 0 20px; margin-bottom: 24px; }
+    .ai-tool-card { background: linear-gradient(135deg, #1C1C1E 0%, #2C2C2E 100%); border-radius: 16px; padding: 16px; }
+    .ai-tool-icon { font-size: 32px; margin-bottom: 8px; }
+    .ai-tool-name { font-size: 15px; font-weight: 600; margin-bottom: 4px; }
+    .ai-tool-desc { font-size: 12px; color: var(--text-tertiary); }
+
+    .template-scroll { overflow-x: auto; padding: 0 20px; margin: 0 -20px; }
+    .template-list { display: flex; gap: 12px; }
+    .template-item { width: 140px; flex-shrink: 0; }
+    .template-cover { 
+      width: 140px; height: 180px; background: var(--bg-secondary); 
+      border-radius: 16px; display: flex; align-items: center; justify-content: center; 
+      font-size: 48px; margin-bottom: 10px;
+    }
+    .template-name { font-size: 15px; font-weight: 500; }
+    .template-author { font-size: 13px; color: var(--text-tertiary); }
+
+    /* Editor */
+    .preview { 
+      margin: 0 20px 16px; aspect-ratio: 9/16; 
+      background: var(--bg-secondary); border-radius: 20px; 
+      display: flex; align-items: center; justify-content: center;
+      position: relative; overflow: hidden;
+    }
+    .preview-content { text-align: center; }
+    .preview-icon { font-size: 64px; margin-bottom: 12px; }
+    .preview-text { font-size: 17px; color: var(--text-secondary); }
+    .preview-hint { font-size: 13px; color: var(--text-tertiary); margin-top: 4px; }
+
+    .playback { display: flex; align-items: center; justify-content: space-between; padding: 0 20px 16px; }
+    .time { font-size: 13px; color: var(--text-secondary); font-variant-numeric: tabular-nums; }
+    .controls { display: flex; align-items: center; gap: 16px; }
+    .control-btn { 
+      width: 36px; height: 36px; border-radius: 50%; 
+      background: var(--bg-tertiary); display: flex; align-items: center; justify-content: center; font-size: 16px;
+    }
+    .play-btn { 
+      width: 56px; height: 56px; border-radius: 50%; 
+      background: var(--primary); display: flex; align-items: center; justify-content: center; font-size: 20px;
+    }
+
+    .timeline-bar { 
+      background: var(--bg-secondary); padding: 12px 20px; 
+      border-top: 0.5px solid var(--separator);
+      border-bottom: 0.5px solid var(--separator);
+    }
+    .timeline-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+    .timeline-title { font-size: 15px; font-weight: 600; }
+    .zoom-btns { display: flex; align-items: center; gap: 8px; }
+    .zoom-btn { 
+      width: 28px; height: 28px; border-radius: 8px; 
+      background: var(--bg-tertiary); display: flex; align-items: center; justify-content: center; font-size: 14px;
+    }
+    .zoom-label { font-size: 12px; color: var(--text-tertiary); min-width: 36px; text-align: center; }
+    .timeline-track { 
+      height: 48px; background: var(--bg-tertiary); border-radius: 10px; 
+      position: relative; overflow: hidden;
+    }
+    .playhead { 
+      position: absolute; top: 0; bottom: 0; width: 2px; background: var(--primary); 
+      z-index: 10;
+    }
+    .playhead-handle { 
+      position: absolute; top: -4px; left: 50%; transform: translateX(-50%) rotate(45deg);
+      width: 10px; height: 10px; background: var(--primary);
+    }
+
+    .editor-tabs { 
+      display: flex; background: var(--bg-secondary); 
+      border-bottom: 0.5px solid var(--separator);
+    }
+    .editor-tab { 
+      flex: 1; text-align: center; padding: 14px 0; 
+      font-size: 13px; color: var(--text-tertiary); position: relative;
+    }
+    .editor-tab.active { color: var(--primary); font-weight: 500; }
+    .editor-tab.active::after {
+      content: ''; position: absolute; bottom: 0; left: 20%; right: 20%;
+      height: 2px; background: var(--primary); border-radius: 1px;
+    }
+
+    .tool-panel { padding: 20px; }
+    .tool-section { margin-bottom: 20px; }
+    .tool-title { font-size: 13px; color: var(--text-tertiary); margin-bottom: 12px; text-transform: uppercase; letter-spacing: 0.5px; }
+    
+    .media-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+    .media-item { 
+      aspect-ratio: 1; background: var(--bg-secondary); border-radius: 14px;
+      display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px;
+    }
+    .media-icon { font-size: 28px; }
+    .media-label { font-size: 12px; color: var(--text-secondary); }
+
+    .filter-scroll { overflow-x: auto; margin: 0 -20px; padding: 0 20px; }
+    .filter-list { display: flex; gap: 10px; }
+    .filter-item { width: 72px; flex-shrink: 0; text-align: center; }
+    .filter-cover { 
+      width: 72px; height: 72px; background: var(--bg-secondary); 
+      border-radius: 14px; display: flex; align-items: center; justify-content: center;
+      margin-bottom: 6px; font-size: 28px;
+    }
+    .filter-name { font-size: 12px; color: var(--text-secondary); }
+
+    .slider-row { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }
+    .slider-label { width: 60px; font-size: 14px; }
+    .slider { flex: 1; height: 4px; -webkit-appearance: none; background: var(--bg-tertiary); border-radius: 2px; }
+    .slider::-webkit-slider-thumb { -webkit-appearance: none; width: 20px; height: 20px; background: var(--primary); border-radius: 50%; }
+    .slider-value { width: 40px; font-size: 13px; color: var(--text-tertiary); text-align: right; }
+
+    .text-style { 
+      background: var(--bg-secondary); border-radius: 12px; padding: 16px; 
+      margin-bottom: 8px; text-align: center;
+    }
+
+    .effect-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+    .effect-item { 
+      aspect-ratio: 1; background: var(--bg-secondary); border-radius: 14px;
+      display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px;
+    }
+    .effect-icon { font-size: 24px; }
+    .effect-name { font-size: 11px; color: var(--text-tertiary); }
+
+    /* Digital Human */
+    .human-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; padding: 0 20px; }
+    .human-item { text-align: center; }
+    .human-avatar { 
+      width: 64px; height: 64px; background: var(--bg-secondary); 
+      border-radius: 50%; margin: 0 auto 8px;
+      display: flex; align-items: center; justify-content: center; font-size: 28px;
+    }
+    .human-name { font-size: 13px; }
+    .human-badge { 
+      display: inline-block; padding: 2px 6px; border-radius: 6px; font-size: 9px; font-weight: 600; margin-top: 2px;
+    }
+    .badge-vip { background: linear-gradient(135deg, #FFD60A, #FF9F0A); color: #000; }
+    .badge-hot { background: var(--red); color: #fff; }
+
+    .config-box { 
+      margin: 20px; padding: 20px; background: var(--bg-secondary); 
+      border-radius: 20px;
+    }
+    .config-preview { display: flex; align-items: center; gap: 16px; margin-bottom: 16px; }
+    .config-avatar { 
+      width: 64px; height: 64px; background: var(--bg-tertiary); 
+      border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 32px;
+    }
+    .config-name { font-size: 17px; font-weight: 600; }
+    .config-status { font-size: 13px; color: var(--text-tertiary); margin-top: 2px; }
+    .config-input { 
+      width: 100%; height: 100px; background: var(--bg-tertiary); 
+      border: none; border-radius: 12px; padding: 14px; color: var(--text);
+      font-size: 15px; resize: none;
+    }
+    .config-input::placeholder { color: var(--text-tertiary); }
+
+    /* Cut Same */
+    .search-box { 
+      margin: 0 20px 16px; padding: 14px 16px; 
+      background: var(--bg-secondary); border-radius: 14px;
+      display: flex; align-items: center; gap: 10px;
+    }
+    .search-icon { font-size: 18px; }
+    .search-input { flex: 1; background: none; border: none; color: var(--text); font-size: 16px; }
+    .search-input::placeholder { color: var(--text-tertiary); }
+
+    .sort-bar { display: flex; gap: 20px; padding: 0 20px; margin-bottom: 16px; }
+    .sort-item { font-size: 15px; color: var(--text-tertiary); padding-bottom: 8px; }
+    .sort-item.active { color: var(--text); font-weight: 500; }
+
+    .category-scroll { overflow-x: auto; padding: 0 20px; margin-bottom: 16px; }
+    .category-list { display: flex; gap: 10px; }
+    .category-item { 
+      padding: 8px 16px; background: var(--bg-secondary); 
+      border-radius: 20px; font-size: 14px; white-space: nowrap;
+    }
+    .category-item.active { background: var(--text); color: var(--bg); }
+
+    .video-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; padding: 0 20px; }
+    .video-item { background: var(--bg-secondary); border-radius: 16px; overflow: hidden; }
+    .video-cover { 
+      aspect-ratio: 9/12; background: var(--bg-tertiary);
+      display: flex; align-items: center; justify-content: center; font-size: 40px;
+    }
+    .video-info { padding: 12px; }
+    .video-title { font-size: 15px; font-weight: 500; margin-bottom: 6px; }
+    .video-meta { display: flex; justify-content: space-between; align-items: center; }
+    .video-stats { font-size: 12px; color: var(--text-tertiary); }
+    .use-btn { 
+      padding: 6px 14px; background: var(--orange); 
+      border-radius: 20px; font-size: 12px; font-weight: 600; color: #000;
+    }
+
+    /* Login */
+    .login-header { padding: 80px 40px 40px; text-align: center; }
+    .login-logo { font-size: 72px; margin-bottom: 20px; }
+    .login-title { font-size: 34px; font-weight: 700; margin-bottom: 8px; }
+    .login-subtitle { font-size: 17px; color: var(--text-secondary); }
+    .login-content { padding: 0 20px; }
+    .login-btn { 
+      width: 100%; padding: 18px; background: linear-gradient(135deg, #07C160, #05AD56);
+      border-radius: 14px; font-size: 17px; font-weight: 600; color: white; text-align: center; margin-bottom: 16px;
+    }
+    .login-divider { 
+      display: flex; align-items: center; gap: 16px; margin: 24px 0;
+    }
+    .login-divider-line { flex: 1; height: 0.5px; background: var(--separator); }
+    .login-divider-text { font-size: 13px; color: var(--text-tertiary); }
+
+    /* Invite */
+    .invite-hero { 
+      padding: 40px 20px; text-align: center;
+      background: linear-gradient(135deg, var(--primary) 0%, #5AC8FA 100%);
+    }
+    .invite-title { font-size: 28px; font-weight: 700; color: white; margin-bottom: 8px; }
+    .invite-subtitle { font-size: 15px; color: rgba(255,255,255,0.8); }
+    .stats-row { display: flex; gap: 1px; background: var(--bg); margin: 0 20px; border-radius: 16px; overflow: hidden; }
+    .stats-item { flex: 1; background: var(--bg-secondary); padding: 20px; text-align: center; }
+    .stats-value { font-size: 32px; font-weight: 700; }
+    .stats-label { font-size: 13px; color: var(--text-tertiary); margin-top: 4px; }
+
+    .code-box { 
+      margin: 20px; padding: 20px; background: var(--bg-secondary); 
+      border-radius: 16px; display: flex; align-items: center; justify-content: space-between;
+    }
+    .code-text { font-size: 28px; font-weight: 700; letter-spacing: 4px; color: var(--primary); }
+    .copy-btn { 
+      padding: 10px 20px; background: var(--primary); 
+      border-radius: 20px; font-size: 14px; font-weight: 600;
+    }
+
+    .share-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; padding: 0 20px; }
+    .share-item { text-align: center; padding: 16px; background: var(--bg-secondary); border-radius: 16px; }
+    .share-icon { font-size: 28px; margin-bottom: 6px; }
+    .share-label { font-size: 12px; color: var(--text-secondary); }
+
+    .reward-list { padding: 0 20px; }
+    .reward-item { 
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 16px 0; border-bottom: 0.5px solid var(--separator);
+    }
+    .reward-title { font-size: 15px; }
+    .reward-desc { font-size: 13px; color: var(--text-tertiary); margin-top: 2px; }
+    .reward-status { font-size: 13px; color: var(--green); }
+
+    /* Profile */
+    .profile-header { 
+      padding: 60px 20px 30px;
+      background: linear-gradient(180deg, var(--bg-secondary) 0%, var(--bg) 100%);
+    }
+    .profile-user { display: flex; align-items: center; gap: 16px; }
+    .profile-avatar { 
+      width: 72px; height: 72px; background: var(--bg-tertiary); 
+      border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 36px;
+    }
+    .profile-name { font-size: 24px; font-weight: 700; }
+    .profile-badge { 
+      display: inline-block; padding: 4px 12px; background: linear-gradient(135deg, #FFD60A, #FF9F0A);
+      border-radius: 20px; font-size: 12px; font-weight: 600; color: #000; margin-top: 4px;
+    }
+
+    .profile-stats { 
+      display: flex; background: var(--bg-secondary); margin: 0 20px; 
+      border-radius: 16px; overflow: hidden;
+    }
+    .profile-stat { flex: 1; padding: 20px; text-align: center; border-right: 0.5px solid var(--separator); }
+    .profile-stat:last-child { border: none; }
+    .profile-stat-value { font-size: 22px; font-weight: 700; }
+    .profile-stat-label { font-size: 12px; color: var(--text-tertiary); margin-top: 2px; }
+
+    .menu-list { padding: 0 20px; }
+    .menu-item { 
+      display: flex; align-items: center; padding: 18px 0;
+      border-bottom: 0.5px solid var(--separator);
+    }
+    .menu-icon { font-size: 22px; margin-right: 14px; }
+    .menu-label { flex: 1; font-size: 17px; }
+    .menu-arrow { font-size: 18px; color: var(--text-tertiary); }
+
+    /* Settings */
+    .settings-section { padding: 0 20px; margin-bottom: 24px; }
+    .settings-title { font-size: 13px; color: var(--text-tertiary); text-transform: uppercase; margin-bottom: 8px; }
+    .settings-item { 
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 14px 0; border-bottom: 0.5px solid var(--separator);
+    }
+    .settings-label { font-size: 17px; }
+    .settings-value { font-size: 15px; color: var(--text-tertiary); }
+
+    /* Toast */
+    .toast { 
+      position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+      background: rgba(255,255,255,0.95); color: #000;
+      padding: 14px 24px; border-radius: 12px; font-size: 15px;
+      z-index: 1000; display: none;
+    }
+    .toast.show { display: block; animation: toastIn 0.3s; }
+    @keyframes toastIn { from { opacity: 0; transform: translate(-50%, -50%) scale(0.8); } to { opacity: 1; transform: translate(-50%, -50%) scale(1); } }
+
+    /* Messages */
+    .msg-tabs { display: flex; background: var(--bg-secondary); border-bottom: 0.5px solid var(--separator); }
+    .msg-tab { flex: 1; text-align: center; padding: 14px 0; font-size: 15px; color: var(--text-tertiary); position: relative; }
+    .msg-tab.active { color: var(--text); font-weight: 500; }
+    .msg-tab.active::after { content: ''; position: absolute; bottom: 0; left: 30%; right: 30%; height: 2px; background: var(--primary); border-radius: 1px; }
+    .msg-item { display: flex; padding: 16px 20px; border-bottom: 0.5px solid var(--separator); align-items: center; }
+    .msg-avatar { width: 44px; height: 44px; background: var(--bg-tertiary); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px; margin-right: 12px; flex-shrink: 0; }
+    .msg-content { flex: 1; min-width: 0; }
+    .msg-name { font-size: 16px; font-weight: 500; margin-bottom: 2px; }
+    .msg-text { font-size: 14px; color: var(--text-secondary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .msg-time { font-size: 12px; color: var(--text-tertiary); margin-left: 10px; flex-shrink: 0; }
+    .msg-badge { width: 8px; height: 8px; background: var(--red); border-radius: 50%; margin-left: 6px; }
+
+    /* Search */
+    .search-header { padding: 50px 20px 16px; display: flex; align-items: center; gap: 12px; }
+    .search-back { width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; font-size: 20px; }
+    .search-box-main { flex: 1; height: 40px; background: var(--bg-secondary); border-radius: 20px; display: flex; align-items: center; padding: 0 16px; }
+    .search-input-main { flex: 1; background: none; border: none; color: var(--text); font-size: 15px; margin-left: 8px; }
+    .search-input-main::placeholder { color: var(--text-tertiary); }
+    .hot-tags { padding: 0 20px; margin-bottom: 20px; }
+    .hot-title { font-size: 14px; color: var(--text-tertiary); margin-bottom: 12px; }
+    .hot-list { display: flex; flex-wrap: wrap; gap: 10px; }
+    .hot-tag { padding: 8px 16px; background: var(--bg-secondary); border-radius: 20px; font-size: 14px; }
+    .search-result-tabs { display: flex; border-bottom: 0.5px solid var(--separator); }
+    .search-result-tab { flex: 1; text-align: center; padding: 14px 0; font-size: 15px; color: var(--text-tertiary); }
+    .search-result-tab.active { color: var(--primary); font-weight: 500; }
+
+    /* Drafts */
+    .draft-header { padding: 60px 20px 16px; display: flex; justify-content: space-between; align-items: center; }
+    .draft-title { font-size: 34px; font-weight: 700; }
+    .draft-edit { font-size: 15px; color: var(--primary); }
+    .draft-item { display: flex; padding: 16px 20px; border-bottom: 0.5px solid var(--separator); align-items: center; gap: 14px; }
+    .draft-cover { width: 80px; height: 60px; background: var(--bg-tertiary); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 24px; flex-shrink: 0; }
+    .draft-info { flex: 1; min-width: 0; }
+    .draft-name { font-size: 16px; font-weight: 500; margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .draft-meta { font-size: 13px; color: var(--text-tertiary); }
+    .draft-actions { display: flex; gap: 12px; }
+    .draft-action { padding: 6px 12px; background: var(--bg-secondary); border-radius: 8px; font-size: 13px; }
+
+    /* Favorites */
+    .fav-header { padding: 60px 20px 16px; }
+    .fav-title { font-size: 34px; font-weight: 700; margin-bottom: 16px; }
+    .fav-tabs { display: flex; gap: 20px; }
+    .fav-tab { font-size: 17px; color: var(--text-tertiary); padding-bottom: 8px; }
+    .fav-tab.active { color: var(--text); font-weight: 500; position: relative; }
+    .fav-tab.active::after { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 2px; background: var(--primary); border-radius: 1px; }
+    .fav-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; padding: 20px; }
+    .fav-item { background: var(--bg-secondary); border-radius: 16px; overflow: hidden; }
+    .fav-cover { aspect-ratio: 9/12; background: var(--bg-tertiary); display: flex; align-items: center; justify-content: center; font-size: 40px; }
+    .fav-info { padding: 12px; }
+    .fav-name { font-size: 15px; font-weight: 500; margin-bottom: 4px; }
+    .fav-author { font-size: 13px; color: var(--text-tertiary); }
+
+    /* Profile Edit */
+    .edit-header { padding: 60px 20px 30px; display: flex; align-items: center; justify-content: space-between; }
+    .edit-back { width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; font-size: 20px; }
+    .edit-title { font-size: 20px; font-weight: 600; }
+    .edit-save { font-size: 17px; color: var(--primary); font-weight: 500; }
+    .edit-avatar-section { text-align: center; padding: 20px 0; }
+    .edit-avatar { width: 96px; height: 96px; background: var(--bg-tertiary); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 48px; margin: 0 auto 12px; position: relative; }
+    .edit-avatar-edit { position: absolute; bottom: 0; right: 0; width: 32px; height: 32px; background: var(--primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 16px; }
+    .edit-avatar-text { font-size: 15px; color: var(--primary); }
+    .edit-form { padding: 0 20px; }
+    .edit-field { padding: 16px 0; border-bottom: 0.5px solid var(--separator); display: flex; justify-content: space-between; align-items: center; }
+    .edit-label { font-size: 17px; }
+    .edit-input { flex: 1; text-align: right; background: none; border: none; color: var(--text); font-size: 17px; margin-left: 20px; }
+    .edit-input::placeholder { color: var(--text-tertiary); }
+
+    /* VIP */
+    .vip-hero { 
+      padding: 60px 20px 40px;
+      background: linear-gradient(135deg, #1C1C1E 0%, #2C2C2E 100%);
+      position: relative; overflow: hidden;
+    }
+    .vip-hero::before {
+      content: ''; position: absolute; top: -30%; right: -30%;
+      width: 200%; height: 200%;
+      background: radial-gradient(circle, rgba(255,214,10,0.2) 0%, transparent 60%);
+    }
+    .vip-badge { display: inline-flex; align-items: center; gap: 6px; padding: 6px 16px; background: linear-gradient(135deg, #FFD60A, #FF9F0A); border-radius: 20px; font-size: 14px; font-weight: 600; color: #000; margin-bottom: 16px; position: relative; }
+    .vip-title { font-size: 32px; font-weight: 700; margin-bottom: 8px; position: relative; }
+    .vip-desc { font-size: 15px; color: var(--text-secondary); position: relative; }
+    .vip-card { margin: -30px 20px 20px; padding: 24px; background: linear-gradient(135deg, #FFD60A, #FF9F0A); border-radius: 20px; position: relative; z-index: 10; }
+    .vip-card-title { font-size: 20px; font-weight: 700; color: #000; margin-bottom: 16px; }
+    .vip-price { display: flex; align-items: baseline; gap: 4px; }
+    .vip-price-symbol { font-size: 20px; font-weight: 600; color: #000; }
+    .vip-price-value { font-size: 40px; font-weight: 700; color: #000; }
+    .vip-price-original { font-size: 16px; color: rgba(0,0,0,0.5); text-decoration: line-through; margin-left: 8px; }
+    .vip-btn { width: 100%; padding: 16px; background: #000; border-radius: 14px; font-size: 17px; font-weight: 600; color: #FFD60A; text-align: center; margin-top: 16px; }
+    .vip-features { padding: 20px; }
+    .vip-feature { display: flex; align-items: center; gap: 12px; padding: 14px 0; border-bottom: 0.5px solid var(--separator); }
+    .vip-feature-icon { font-size: 20px; }
+    .vip-feature-text { flex: 1; font-size: 15px; }
+    .vip-plan-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; padding: 0 20px; margin-bottom: 20px; }
+    .vip-plan { background: var(--bg-secondary); border-radius: 16px; padding: 20px 12px; text-align: center; border: 2px solid transparent; }
+    .vip-plan.active { border-color: var(--primary); }
+    .vip-plan-badge { display: inline-block; padding: 2px 8px; background: var(--red); border-radius: 10px; font-size: 10px; color: white; margin-bottom: 8px; }
+    .vip-plan-name { font-size: 15px; font-weight: 500; margin-bottom: 4px; }
+    .vip-plan-price { font-size: 24px; font-weight: 700; color: var(--primary); }
+    .vip-plan-unit { font-size: 12px; color: var(--text-tertiary); }
+
+    /* Export */
+    .export-header { padding: 60px 20px 20px; display: flex; align-items: center; justify-content: space-between; }
+    .export-back { width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; font-size: 20px; }
+    .export-title { font-size: 20px; font-weight: 600; }
+    .export-preview { margin: 0 20px 20px; aspect-ratio: 9/16; background: var(--bg-secondary); border-radius: 16px; display: flex; align-items: center; justify-content: center; font-size: 64px; }
+    .export-section { padding: 0 20px; margin-bottom: 20px; }
+    .export-label { font-size: 14px; color: var(--text-tertiary); margin-bottom: 12px; }
+    .export-options { display: flex; gap: 10px; }
+    .export-option { flex: 1; padding: 14px 10px; background: var(--bg-secondary); border-radius: 12px; text-align: center; border: 2px solid transparent; }
+    .export-option.active { border-color: var(--primary); }
+    .export-option-name { font-size: 15px; font-weight: 500; margin-bottom: 4px; }
+    .export-option-desc { font-size: 12px; color: var(--text-tertiary); }
+    .export-quality { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+    .export-quality-item { padding: 12px 8px; background: var(--bg-secondary); border-radius: 12px; text-align: center; border: 2px solid transparent; }
+    .export-quality-item.active { border-color: var(--primary); }
+    .export-quality-name { font-size: 14px; font-weight: 500; margin-bottom: 2px; }
+    .export-quality-size { font-size: 11px; color: var(--text-tertiary); }
+
+    /* Material */
+    .material-header { padding: 60px 20px 16px; display: flex; align-items: center; justify-content: space-between; }
+    .material-back { width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; font-size: 20px; }
+    .material-title { font-size: 20px; font-weight: 600; }
+    .material-tabs { display: flex; border-bottom: 0.5px solid var(--separator); padding: 0 20px; }
+    .material-tab { flex: 1; text-align: center; padding: 14px 0; font-size: 15px; color: var(--text-tertiary); position: relative; }
+    .material-tab.active { color: var(--text); font-weight: 500; }
+    .material-tab.active::after { content: ''; position: absolute; bottom: 0; left: 30%; right: 30%; height: 2px; background: var(--primary); border-radius: 1px; }
+    .material-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; padding: 16px 20px; }
+    .material-item { aspect-ratio: 1; background: var(--bg-secondary); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 28px; position: relative; }
+    .material-item-selected { position: absolute; top: 6px; right: 6px; width: 20px; height: 20px; background: var(--primary); border-radius: 50%; display: none; align-items: center; justify-content: center; font-size: 12px; }
+    .material-item.selected .material-item-selected { display: flex; }
+
+    /* Publish */
+    .publish-header { padding: 60px 20px 20px; display: flex; align-items: center; justify-content: space-between; }
+    .publish-back { width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; font-size: 20px; }
+    .publish-title { font-size: 20px; font-weight: 600; }
+    .publish-save { font-size: 15px; color: var(--primary); }
+    .publish-preview { margin: 0 20px 20px; aspect-ratio: 9/16; background: var(--bg-secondary); border-radius: 16px; display: flex; align-items: center; justify-content: center; font-size: 64px; }
+    .publish-cover { margin: 0 20px 20px; }
+    .publish-cover-box { width: 100%; height: 160px; background: var(--bg-secondary); border-radius: 16px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; font-size: 40px; border: 2px dashed var(--separator); }
+    .publish-cover-text { font-size: 15px; color: var(--text-tertiary); }
+    .publish-form { padding: 0 20px; }
+    .publish-field { padding: 16px 0; border-bottom: 0.5px solid var(--separator); }
+    .publish-field-label { font-size: 14px; color: var(--text-tertiary); margin-bottom: 8px; }
+    .publish-field-input { width: 100%; background: none; border: none; color: var(--text); font-size: 16px; }
+    .publish-field-input::placeholder { color: var(--text-tertiary); }
+    .publish-tags { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 8px; }
+    .publish-tag { padding: 6px 14px; background: var(--bg-secondary); border-radius: 16px; font-size: 14px; }
+    .publish-tag.active { background: var(--primary); }
+    .publish-switch { display: flex; justify-content: space-between; align-items: center; padding: 16px 0; }
+    .publish-switch-label { font-size: 16px; }
+    .publish-switch-toggle { width: 50px; height: 30px; background: var(--bg-tertiary); border-radius: 15px; position: relative; }
+    .publish-switch-toggle.active { background: var(--primary); }
+    .publish-switch-toggle::after { content: ''; position: absolute; top: 3px; left: 3px; width: 24px; height: 24px; background: white; border-radius: 50%; transition: 0.3s; }
+    .publish-switch-toggle.active::after { left: 23px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="toast" id="toast"></div>
+
+    <!-- Home -->
+    <div id="page-home" class="page active">
+      <div class="hero" onclick="switchPage('cut-same')">
+        <div class="hero-title">剪同款</div>
+        <div class="hero-desc">使用热门视频模板</div>
+        <div class="hero-icon">🔥</div>
+      </div>
+
+      <div class="section">
+        <div class="section-header">
+          <div class="section-title">快捷功能</div>
+        </div>
+        <div class="grid-4" style="padding: 0 20px;">
+          <div class="quick-item" onclick="switchPage('digital-human')">
+            <div class="quick-icon" style="background: linear-gradient(135deg, #5856D6, #AF52DE);">🧑‍💻</div>
+            <div class="quick-label">数字人</div>
+          </div>
+          <div class="quick-item" onclick="switchPage('cut-same')">
+            <div class="quick-icon" style="background: linear-gradient(135deg, #FF375F, #FF6B6B);">✂️</div>
+            <div class="quick-label">剪同款</div>
+          </div>
+          <div class="quick-item" onclick="switchPage('editor')">
+            <div class="quick-icon" style="background: linear-gradient(135deg, #30D158, #34C759);">🎬</div>
+            <div class="quick-label">剪辑</div>
+          </div>
+          <div class="quick-item" onclick="switchPage('invite')">
+            <div class="quick-icon" style="background: linear-gradient(135deg, #FF9F0A, #FFD60A);">🎁</div>
+            <div class="quick-label">邀请</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-header">
+          <div class="section-title">AI智能工具</div>
+        </div>
+        <div class="ai-tools-grid" style="padding: 0 20px;">
+          <div class="ai-tool-card" onclick="switchPage('ai-generate')">
+            <div class="ai-tool-icon">🤖</div>
+            <div class="ai-tool-name">AI一键成片</div>
+            <div class="ai-tool-desc">输入主题自动生成视频</div>
+          </div>
+          <div class="ai-tool-card" onclick="switchPage('smart-copy')">
+            <div class="ai-tool-icon">✍️</div>
+            <div class="ai-tool-name">智能文案</div>
+            <div class="ai-tool-desc">AI生成营销文案</div>
+          </div>
+          <div class="ai-tool-card" onclick="switchPage('image-to-video')">
+            <div class="ai-tool-icon">🖼️</div>
+            <div class="ai-tool-name">图文转视频</div>
+            <div class="ai-tool-desc">文案图片生成视频</div>
+          </div>
+          <div class="ai-tool-card" onclick="switchPage('batch-generate')">
+            <div class="ai-tool-icon">📦</div>
+            <div class="ai-tool-name">批量生成</div>
+            <div class="ai-tool-desc">一次生成多个视频</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-header">
+          <div class="section-title">快捷功能</div>
+        </div>
+        <div class="grid-4" style="padding: 0 20px;">
+          <div class="quick-item" onclick="switchPage('digital-human')">
+            <div class="quick-icon" style="background: linear-gradient(135deg, #5856D6, #AF52DE);">🧑‍💻</div>
+            <div class="quick-label">数字人</div>
+          </div>
+          <div class="quick-item" onclick="switchPage('cut-same')">
+            <div class="quick-icon" style="background: linear-gradient(135deg, #FF375F, #FF6B6B);">✂️</div>
+            <div class="quick-label">剪同款</div>
+          </div>
+          <div class="quick-item" onclick="switchPage('editor')">
+            <div class="quick-icon" style="background: linear-gradient(135deg, #30D158, #34C759);">🎬</div>
+            <div class="quick-label">剪辑</div>
+          </div>
+          <div class="quick-item" onclick="switchPage('material-mall')">
+            <div class="quick-icon" style="background: linear-gradient(135deg, #FF9F0A, #FFD60A);">🎨</div>
+            <div class="quick-label">素材</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-header">
+          <div class="section-title">热门模板</div>
+          <div class="section-more" onclick="switchPage('templates')">更多</div>
+        </div>
+        <div class="template-scroll">
+          <div class="template-list">
+            <div class="template-item" onclick="switchPage('editor')">
+              <div class="template-cover">🎬</div>
+              <div class="template-name">春日踏青</div>
+              <div class="template-author">官方</div>
+            </div>
+            <div class="template-item" onclick="switchPage('editor')">
+              <div class="template-cover">🍜</div>
+              <div class="template-name">美食探店</div>
+              <div class="template-author">美食达人</div>
+            </div>
+            <div class="template-item" onclick="switchPage('editor')">
+              <div class="template-cover">🛍️</div>
+              <div class="template-name">电商种草</div>
+              <div class="template-author">电商卖家</div>
+            </div>
+            <div class="template-item" onclick="switchPage('editor')">
+              <div class="template-cover">📚</div>
+              <div class="template-name">知识分享</div>
+              <div class="template-author">知识博主</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Editor -->
+    <div id="page-editor" class="page">
+      <div class="header">
+        <div class="back-btn" onclick="switchPage('home')">←</div>
+        <div class="header-title">编辑</div>
+        <div class="btn" style="padding: 8px 16px; font-size: 14px;" onclick="switchPage('export')">导出</div>
+      </div>
+
+      <div class="preview">
+        <div class="preview-content">
+          <div class="preview-icon">🎬</div>
+          <div class="preview-text">点击添加素材</div>
+          <div class="preview-hint">支持视频和图片</div>
+        </div>
+      </div>
+
+      <div class="playback">
+        <div class="time"><span id="currentTime">0:00</span> / <span id="totalTime">0:00</span></div>
+        <div class="controls">
+          <div class="control-btn" onclick="showToast('快退')">⏪</div>
+          <div class="play-btn" onclick="togglePlay()">▶</div>
+          <div class="control-btn" onclick="showToast('快进')">⏩</div>
+        </div>
+      </div>
+
+      <div class="timeline-bar">
+        <div class="timeline-header">
+          <div class="timeline-title">时间轴</div>
+          <div class="zoom-btns">
+            <div class="zoom-btn" onclick="showToast('缩小')">−</div>
+            <div class="zoom-label">100%</div>
+            <div class="zoom-btn" onclick="showToast('放大')">+</div>
+          </div>
+        </div>
+        <div class="timeline-track">
+          <div class="playhead" style="left: 0%;">
+            <div class="playhead-handle"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="editor-tabs">
+        <div class="editor-tab active">素材</div>
+        <div class="editor-tab">剪辑</div>
+        <div class="editor-tab">文字</div>
+        <div class="editor-tab">滤镜</div>
+        <div class="editor-tab">音频</div>
+        <div class="editor-tab">特效</div>
+      </div>
+
+      <div class="tool-panel">
+        <div class="tool-section">
+          <div class="tool-title">导入</div>
+          <div class="media-grid">
+            <div class="media-item" onclick="switchPage('material')">
+              <div class="media-icon">📁</div>
+              <div class="media-label">素材库</div>
+            </div>
+            <div class="media-item" onclick="showToast('选择视频')">
+              <div class="media-icon">🎬</div>
+              <div class="media-label">视频</div>
+            </div>
+            <div class="media-item" onclick="showToast('选择图片')">
+              <div class="media-icon">🖼️</div>
+              <div class="media-label">图片</div>
+            </div>
+            <div class="media-item" onclick="switchPage('publish')">
+              <div class="media-icon">📤</div>
+              <div class="media-label">发布</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="tool-section">
+          <div class="tool-title">滤镜</div>
+          <div class="filter-scroll">
+            <div class="filter-list">
+              <div class="filter-item">
+                <div class="filter-cover">🎨</div>
+                <div class="filter-name">原声</div>
+              </div>
+              <div class="filter-item">
+                <div class="filter-cover">☀️</div>
+                <div class="filter-name">暖阳</div>
+              </div>
+              <div class="filter-item">
+                <div class="filter-cover">🌊</div>
+                <div class="filter-name">清爽</div>
+              </div>
+              <div class="filter-item">
+                <div class="filter-cover">🎬</div>
+                <div class="filter-name">电影</div>
+              </div>
+              <div class="filter-item">
+                <div class="filter-cover">📷</div>
+                <div class="filter-name">复古</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="tool-section">
+          <div class="tool-title">调节</div>
+          <div class="slider-row">
+            <div class="slider-label">亮度</div>
+            <input type="range" class="slider" min="0" max="100" value="50">
+            <div class="slider-value">50</div>
+          </div>
+          <div class="slider-row">
+            <div class="slider-label">对比度</div>
+            <input type="range" class="slider" min="0" max="100" value="50">
+            <div class="slider-value">50</div>
+          </div>
+          <div class="slider-row">
+            <div class="slider-label">饱和度</div>
+            <input type="range" class="slider" min="0" max="100" value="50">
+            <div class="slider-value">50</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Digital Human -->
+    <div id="page-digital-human" class="page">
+      <div class="header">
+        <div class="back-btn" onclick="switchPage('home')">←</div>
+        <div class="header-title">数字人</div>
+      </div>
+
+      <div class="section" style="margin-top: 20px;">
+        <div class="section-title" style="padding: 0 20px; margin-bottom: 16px;">选择形象</div>
+        <div class="human-grid">
+          <div class="human-item">
+            <div class="human-avatar">👨‍🏫</div>
+            <div class="human-name">小智老师</div>
+            <div><span class="human-badge badge-vip">VIP</span><span class="human-badge badge-hot">热</span></div>
+          </div>
+          <div class="human-item">
+            <div class="human-avatar">👩‍🎤</div>
+            <div class="human-name">小美主播</div>
+            <div><span class="human-badge badge-hot">热</span></div>
+          </div>
+          <div class="human-item">
+            <div class="human-avatar">🤖</div>
+            <div class="human-name">小宇助手</div>
+          </div>
+          <div class="human-item">
+            <div class="human-avatar">👩‍💻</div>
+            <div class="human-name">小梦老师</div>
+            <div><span class="human-badge badge-vip">VIP</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="config-box">
+        <div class="tool-title" style="margin-bottom: 16px;">配置</div>
+        <div class="config-preview">
+          <div class="config-avatar">👨‍🏫</div>
+          <div>
+            <div class="config-name">小智老师</div>
+            <div class="config-status">准备生成...</div>
+          </div>
+        </div>
+        <textarea class="config-input" placeholder="输入需要数字人朗读的文案..."></textarea>
+        <div class="btn btn-primary btn-full" style="margin-top: 16px;" onclick="showToast('AI生成中...')">生成视频</div>
+      </div>
+    </div>
+
+    <!-- Cut Same -->
+    <div id="page-cut-same" class="page">
+      <div class="header">
+        <div class="back-btn" onclick="switchPage('home')">←</div>
+        <div class="header-title">剪同款</div>
+      </div>
+
+      <div class="search-box">
+        <div class="search-icon">🔍</div>
+        <input class="search-input" placeholder="搜索同款视频...">
+      </div>
+
+      <div class="sort-bar">
+        <div class="sort-item active">最热</div>
+        <div class="sort-item">最新</div>
+        <div class="sort-item">飙升</div>
+      </div>
+
+      <div class="category-scroll">
+        <div class="category-list">
+          <div class="category-item active">全部</div>
+          <div class="category-item">舞蹈</div>
+          <div class="category-item">搞笑</div>
+          <div class="category-item">美食</div>
+          <div class="category-item">旅行</div>
+          <div class="category-item">美妆</div>
+        </div>
+      </div>
+
+      <div class="video-grid">
+        <div class="video-item" onclick="switchPage('editor')">
+          <div class="video-cover">💃</div>
+          <div class="video-info">
+            <div class="video-title">科目三舞蹈</div>
+            <div class="video-meta">
+              <div class="video-stats">8.5万使用</div>
+              <div class="use-btn">剪同款</div>
+            </div>
+          </div>
+        </div>
+        <div class="video-item" onclick="switchPage('editor')">
+          <div class="video-cover">👗</div>
+          <div class="video-info">
+            <div class="video-title">多巴胺穿搭</div>
+            <div class="video-meta">
+              <div class="video-stats">6.2万使用</div>
+              <div class="use-btn">剪同款</div>
+            </div>
+          </div>
+        </div>
+        <div class="video-item" onclick="switchPage('editor')">
+          <div class="video-cover">🍳</div>
+          <div class="video-info">
+            <div class="video-title">快手家常菜</div>
+            <div class="video-meta">
+              <div class="video-stats">4.5万使用</div>
+              <div class="use-btn">剪同款</div>
+            </div>
+          </div>
+        </div>
+        <div class="video-item" onclick="switchPage('editor')">
+          <div class="video-cover">🎤</div>
+          <div class="video-info">
+            <div class="video-title">搞笑配音</div>
+            <div class="video-meta">
+              <div class="video-stats">3.8万使用</div>
+              <div class="use-btn">剪同款</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Login -->
+    <div id="page-login" class="page">
+      <div class="login-header">
+        <div class="login-logo">🎬</div>
+        <div class="login-title">智剪AI</div>
+        <div class="login-subtitle">智能视频创作平台</div>
+      </div>
+      <div class="login-content">
+        <div class="login-btn" onclick="showToast('微信登录')">微信一键登录</div>
+        <div class="login-divider">
+          <div class="login-divider-line"></div>
+          <div class="login-divider-text">或</div>
+          <div class="login-divider-line"></div>
+        </div>
+        <input class="btn" style="margin-bottom: 12px; text-align: left;" placeholder="输入手机号">
+        <div class="btn btn-primary" onclick="showToast('获取验证码')">获取验证码</div>
+      </div>
+    </div>
+
+    <!-- Invite -->
+    <div id="page-invite" class="page">
+      <div class="invite-hero">
+        <div class="invite-title">邀请好友</div>
+        <div class="invite-subtitle">邀请赚VIP，畅享会员特权</div>
+      </div>
+
+      <div class="stats-row">
+        <div class="stats-item">
+          <div class="stats-value">28</div>
+          <div class="stats-label">已邀请</div>
+        </div>
+        <div class="stats-item">
+          <div class="stats-value">2800</div>
+          <div class="stats-label">积分奖励</div>
+        </div>
+      </div>
+
+      <div class="code-box">
+        <div class="code-text">ABC123</div>
+        <div class="copy-btn" onclick="copyCode()">复制</div>
+      </div>
+
+      <div class="section">
+        <div class="section-title" style="padding: 0 20px; margin-bottom: 12px;">分享邀请</div>
+        <div class="share-grid">
+          <div class="share-item" onclick="showToast('分享到微信')">
+            <div class="share-icon">💬</div>
+            <div class="share-label">微信好友</div>
+          </div>
+          <div class="share-item" onclick="showToast('分享到朋友圈')">
+            <div class="share-icon">📱</div>
+            <div class="share-label">朋友圈</div>
+          </div>
+          <div class="share-item" onclick="showToast('生成海报')">
+            <div class="share-icon">🖼️</div>
+            <div class="share-label">海报</div>
+          </div>
+          <div class="share-item" onclick="copyCode()">
+            <div class="share-icon">🔗</div>
+            <div class="share-label">邀请链接</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title" style="padding: 0 20px; margin-bottom: 12px;">邀请奖励</div>
+        <div class="card" style="margin: 0 20px;">
+          <div class="reward-item">
+            <div>
+              <div class="reward-title">新用户礼包</div>
+              <div class="reward-desc">被邀请人获得7天VIP</div>
+            </div>
+            <div class="reward-status">已生效</div>
+          </div>
+          <div class="reward-item">
+            <div>
+              <div class="reward-title">邀请人奖励</div>
+              <div class="reward-desc">邀请1人获得100积分</div>
+            </div>
+            <div class="reward-status">已生效</div>
+          </div>
+          <div class="reward-item" style="border: none;">
+            <div>
+              <div class="reward-title">阶梯奖励</div>
+              <div class="reward-desc">邀请满10人额外奖励VIP月卡</div>
+            </div>
+            <div style="color: var(--orange);">待解锁</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Profile -->
+    <div id="page-profile" class="page">
+      <div class="profile-header">
+        <div class="profile-user">
+          <div class="profile-avatar" onclick="switchPage('profile-edit')">👤</div>
+          <div>
+            <div class="profile-name">智剪用户</div>
+            <div class="profile-badge">VIP会员</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="profile-stats">
+        <div class="profile-stat">
+          <div class="profile-stat-value">1280</div>
+          <div class="profile-stat-label">积分</div>
+        </div>
+        <div class="profile-stat">
+          <div class="profile-stat-value">12</div>
+          <div class="profile-stat-label">作品</div>
+        </div>
+        <div class="profile-stat">
+          <div class="profile-stat-value">1.2K</div>
+          <div class="profile-stat-label">粉丝</div>
+        </div>
+      </div>
+
+      <div class="menu-list" style="margin-top: 20px;">
+        <div class="menu-item" onclick="switchPage('projects')">
+          <div class="menu-icon">📁</div>
+          <div class="menu-label">我的项目</div>
+          <div class="menu-arrow">›</div>
+        </div>
+        <div class="menu-item" onclick="switchPage('drafts')">
+          <div class="menu-icon">📝</div>
+          <div class="menu-label">草稿箱</div>
+          <div class="menu-arrow">›</div>
+        </div>
+        <div class="menu-item" onclick="switchPage('favorites')">
+          <div class="menu-icon">❤️</div>
+          <div class="menu-label">我的收藏</div>
+          <div class="menu-arrow">›</div>
+        </div>
+        <div class="menu-item" onclick="switchPage('invite')">
+          <div class="menu-icon">👥</div>
+          <div class="menu-label">邀请好友</div>
+          <div class="menu-arrow">›</div>
+        </div>
+        <div class="menu-item" onclick="switchPage('points-mall')">
+          <div class="menu-icon">💰</div>
+          <div class="menu-label">积分商城</div>
+          <div class="menu-arrow">›</div>
+        </div>
+        <div class="menu-item" onclick="switchPage('customer-service')">
+          <div class="menu-icon">💬</div>
+          <div class="menu-label">客服与帮助</div>
+          <div class="menu-arrow">›</div>
+        </div>
+        <div class="menu-item" onclick="switchPage('help')">
+          <div class="menu-icon">❓</div>
+          <div class="menu-label">使用帮助</div>
+          <div class="menu-arrow">›</div>
+        </div>
+        <div class="menu-item" onclick="switchPage('settings')">
+          <div class="menu-icon">⚙️</div>
+          <div class="menu-label">设置</div>
+          <div class="menu-arrow">›</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Settings -->
+    <div id="page-settings" class="page">
+      <div class="header">
+        <div class="back-btn" onclick="switchPage('profile')">←</div>
+        <div class="header-title">设置</div>
+      </div>
+
+      <div class="settings-section">
+        <div class="settings-title">通用</div>
+        <div class="settings-item">
+          <div class="settings-label">自动保存</div>
+          <div style="width: 50px; height: 30px; background: var(--primary); border-radius: 15px; position: relative;">
+            <div style="position: absolute; top: 3px; right: 3px; width: 24px; height: 24px; background: white; border-radius: 50%;"></div>
+          </div>
+        </div>
+        <div class="settings-item">
+          <div class="settings-label">WiFi下自动下载</div>
+          <div style="width: 50px; height: 30px; background: var(--primary); border-radius: 15px; position: relative;">
+            <div style="position: absolute; top: 3px; right: 3px; width: 24px; height: 24px; background: white; border-radius: 50%;"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="settings-section">
+        <div class="settings-title">关于</div>
+        <div class="settings-item">
+          <div class="settings-label">版本号</div>
+          <div class="settings-value">v1.0.0</div>
+        </div>
+        <div class="settings-item">
+          <div class="settings-label">用户协议</div>
+          <div class="menu-arrow">›</div>
+        </div>
+        <div class="settings-item">
+          <div class="settings-label">隐私政策</div>
+          <div class="menu-arrow">›</div>
+        </div>
+      </div>
+
+      <div style="padding: 30px 20px;">
+        <div class="btn" style="color: var(--red);">退出登录</div>
+      </div>
+    </div>
+
+    <!-- Projects -->
+    <div id="page-projects" class="page">
+      <div class="header">
+        <div class="header-title">我的项目</div>
+        <div class="btn" style="padding: 8px 16px; font-size: 14px;" onclick="switchPage('editor')">+ 新建</div>
+      </div>
+
+      <div class="card" onclick="switchPage('editor')">
+        <div style="display: flex; gap: 14px; align-items: center;">
+          <div style="width: 60px; height: 80px; background: var(--bg-tertiary); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 24px;">🎬</div>
+          <div style="flex: 1;">
+            <div style="font-size: 17px; font-weight: 500; margin-bottom: 4px;">春日踏青视频</div>
+            <div style="font-size: 13px; color: var(--text-tertiary);">2:00 · 1小时前</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" onclick="switchPage('editor')">
+        <div style="display: flex; gap: 14px; align-items: center;">
+          <div style="width: 60px; height: 80px; background: var(--bg-tertiary); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 24px;">🎬</div>
+          <div style="flex: 1;">
+            <div style="font-size: 17px; font-weight: 500; margin-bottom: 4px;">美食探店记录</div>
+            <div style="font-size: 13px; color: var(--text-tertiary);">1:30 · 2小时前</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Templates -->
+    <div id="page-templates" class="page">
+      <div class="header">
+        <div class="back-btn" onclick="switchPage('home')">←</div>
+        <div class="header-title">模板中心</div>
+      </div>
+
+      <div class="category-scroll" style="margin-bottom: 16px;">
+        <div class="category-list">
+          <div class="category-item active">全部</div>
+          <div class="category-item">节日</div>
+          <div class="category-item">生活</div>
+          <div class="category-item">营销</div>
+          <div class="category-item">教程</div>
+        </div>
+      </div>
+
+      <div class="video-grid">
+        <div class="video-item" onclick="switchPage('editor')">
+          <div class="video-cover">🎆</div>
+          <div class="video-info">
+            <div class="video-title">春节祝福</div>
+            <div class="video-meta">
+              <div class="video-stats">1.0万使用</div>
+            </div>
+          </div>
+        </div>
+        <div class="video-item" onclick="switchPage('editor')">
+          <div class="video-cover">🌙</div>
+          <div class="video-info">
+            <div class="video-title">中秋团圆</div>
+            <div class="video-meta">
+              <div class="video-stats">0.8万使用</div>
+            </div>
+          </div>
+        </div>
+        <div class="video-item" onclick="switchPage('editor')">
+          <div class="video-cover">🎂</div>
+          <div class="video-info">
+            <div class="video-title">生日派对</div>
+            <div class="video-meta">
+              <div class="video-stats">1.5万使用</div>
+            </div>
+          </div>
+        </div>
+        <div class="video-item" onclick="switchPage('editor')">
+          <div class="video-cover">🍜</div>
+          <div class="video-info">
+            <div class="video-title">美食探店</div>
+            <div class="video-meta">
+              <div class="video-stats">1.2万使用</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Messages -->
+    <div id="page-messages" class="page">
+      <div class="header">
+        <div class="header-title">消息</div>
+      </div>
+
+      <div class="msg-tabs">
+        <div class="msg-tab active">通知</div>
+        <div class="msg-tab">评论</div>
+        <div class="msg-tab">私信</div>
+      </div>
+
+      <div class="msg-item">
+        <div class="msg-avatar">📢</div>
+        <div class="msg-content">
+          <div class="msg-name">系统通知 <span class="msg-badge"></span></div>
+          <div class="msg-text">您的VIP会员即将到期，请及时续费</div>
+        </div>
+        <div class="msg-time">10:30</div>
+      </div>
+
+      <div class="msg-item">
+        <div class="msg-avatar">🎁</div>
+        <div class="msg-content">
+          <div class="msg-name">活动提醒 <span class="msg-badge"></span></div>
+          <div class="msg-text">新用户专享：首月VIP仅需9.9元</div>
+        </div>
+        <div class="msg-time">昨天</div>
+      </div>
+
+      <div class="msg-item">
+        <div class="msg-avatar">👤</div>
+        <div class="msg-content">
+          <div class="msg-name">智剪用户123</div>
+          <div class="msg-text">这个模板太棒了，感谢分享！</div>
+        </div>
+        <div class="msg-time">昨天</div>
+      </div>
+
+      <div class="msg-item">
+        <div class="msg-avatar">❤️</div>
+        <div class="msg-content">
+          <div class="msg-name">点赞通知</div>
+          <div class="msg-text">您的作品「春日踏青」被赞了100次</div>
+        </div>
+        <div class="msg-time">2天前</div>
+      </div>
+
+      <div class="msg-item">
+        <div class="msg-avatar">✅</div>
+        <div class="msg-content">
+          <div class="msg-name">作品审核通过</div>
+          <div class="msg-text">您的作品「美食探店」已审核通过</div>
+        </div>
+        <div class="msg-time">3天前</div>
+      </div>
+    </div>
+
+    <!-- Search -->
+    <div id="page-search" class="page">
+      <div class="search-header">
+        <div class="search-back" onclick="switchPage('home')">←</div>
+        <div class="search-box-main">
+          <div>🔍</div>
+          <input class="search-input-main" placeholder="搜索模板、视频...">
+        </div>
+      </div>
+
+      <div class="hot-tags">
+        <div class="hot-title">热门搜索</div>
+        <div class="hot-list">
+          <div class="hot-tag" onclick="showToast('搜索: 舞蹈')">舞蹈</div>
+          <div class="hot-tag" onclick="showToast('搜索: 美食')">美食</div>
+          <div class="hot-tag" onclick="showToast('搜索: 搞笑')">搞笑</div>
+          <div class="hot-tag" onclick="showToast('搜索: 教程')">教程</div>
+          <div class="hot-tag" onclick="showToast('搜索: 节日')">节日</div>
+          <div class="hot-tag" onclick="showToast('搜索: 电商')">电商</div>
+          <div class="hot-tag" onclick="showToast('搜索: 美妆')">美妆</div>
+          <div class="hot-tag" onclick="showToast('搜索: 旅行')">旅行</div>
+        </div>
+      </div>
+
+      <div class="search-result-tabs" style="display: none;">
+        <div class="search-result-tab active">模板</div>
+        <div class="search-result-tab">视频</div>
+        <div class="search-result-tab">用户</div>
+      </div>
+    </div>
+
+    <!-- Drafts -->
+    <div id="page-drafts" class="page">
+      <div class="draft-header">
+        <div class="draft-title">草稿箱</div>
+        <div class="draft-edit" onclick="showToast('编辑模式')">编辑</div>
+      </div>
+
+      <div class="draft-item">
+        <div class="draft-cover">🎬</div>
+        <div class="draft-info">
+          <div class="draft-name">未完成的视频项目</div>
+          <div class="draft-meta">0:15 · 2024-03-15</div>
+        </div>
+        <div class="draft-actions">
+          <div class="draft-action" onclick="switchPage('editor')">编辑</div>
+          <div class="draft-action" onclick="showToast('删除草稿')">删除</div>
+        </div>
+      </div>
+
+      <div class="draft-item">
+        <div class="draft-cover">📝</div>
+        <div class="draft-info">
+          <div class="draft-name">待剪辑素材</div>
+          <div class="draft-meta">0:00 · 2024-03-14</div>
+        </div>
+        <div class="draft-actions">
+          <div class="draft-action" onclick="switchPage('editor')">编辑</div>
+          <div class="draft-action" onclick="showToast('删除草稿')">删除</div>
+        </div>
+      </div>
+
+      <div class="draft-item">
+        <div class="draft-cover">🎨</div>
+        <div class="draft-info">
+          <div class="draft-name">模板制作中</div>
+          <div class="draft-meta">2024-03-13</div>
+        </div>
+        <div class="draft-actions">
+          <div class="draft-action" onclick="switchPage('editor')">编辑</div>
+          <div class="draft-action" onclick="showToast('删除草稿')">删除</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Favorites -->
+    <div id="page-favorites" class="page">
+      <div class="fav-header">
+        <div class="fav-title">我的收藏</div>
+      </div>
+
+      <div class="fav-tabs">
+        <div class="fav-tab active">模板</div>
+        <div class="fav-tab">视频</div>
+        <div class="fav-tab">素材</div>
+      </div>
+
+      <div class="fav-grid">
+        <div class="fav-item" onclick="switchPage('editor')">
+          <div class="fav-cover">🎬</div>
+          <div class="fav-info">
+            <div class="fav-name">热门舞蹈模板</div>
+            <div class="fav-author">官方</div>
+          </div>
+        </div>
+        <div class="fav-item" onclick="switchPage('editor')">
+          <div class="fav-cover">🍜</div>
+          <div class="fav-info">
+            <div class="fav-name">美食教程模板</div>
+            <div class="fav-author">美食达人</div>
+          </div>
+        </div>
+        <div class="fav-item" onclick="switchPage('editor')">
+          <div class="fav-cover">🎄</div>
+          <div class="fav-info">
+            <div class="fav-name">节日祝福模板</div>
+            <div class="fav-author">官方</div>
+          </div>
+        </div>
+        <div class="fav-item" onclick="switchPage('editor')">
+          <div class="fav-cover">🛍️</div>
+          <div class="fav-info">
+            <div class="fav-name">电商种草模板</div>
+            <div class="fav-author">电商卖家</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Profile Edit -->
+    <div id="page-profile-edit" class="page">
+      <div class="edit-header">
+        <div class="edit-back" onclick="switchPage('profile')">←</div>
+        <div class="edit-title">编辑资料</div>
+        <div class="edit-save" onclick="switchPage('profile'); showToast('保存成功')">保存</div>
+      </div>
+
+      <div class="edit-avatar-section">
+        <div class="edit-avatar">
+          👤
+          <div class="edit-avatar-edit">✏️</div>
+        </div>
+        <div class="edit-avatar-text">点击更换头像</div>
+      </div>
+
+      <div class="edit-form">
+        <div class="edit-field">
+          <div class="edit-label">昵称</div>
+          <input class="edit-input" placeholder="请输入昵称" value="智剪用户">
+        </div>
+        <div class="edit-field">
+          <div class="edit-label">简介</div>
+          <input class="edit-input" placeholder="请输入简介" value="热爱视频创作">
+        </div>
+        <div class="edit-field">
+          <div class="edit-label">性别</div>
+          <input class="edit-input" placeholder="请选择" value="男">
+        </div>
+        <div class="edit-field">
+          <div class="edit-label">生日</div>
+          <input class="edit-input" placeholder="请选择" value="2000-01-01">
+        </div>
+        <div class="edit-field">
+          <div class="edit-label">地区</div>
+          <input class="edit-input" placeholder="请选择" value="北京">
+        </div>
+      </div>
+    </div>
+
+    <!-- VIP -->
+    <div id="page-vip" class="page">
+      <div class="vip-hero">
+        <div class="vip-badge">👑 VIP会员</div>
+        <div class="vip-title">开通会员</div>
+        <div class="vip-desc">畅享全部高级功能</div>
+      </div>
+
+      <div class="vip-plan-grid">
+        <div class="vip-plan">
+          <div class="vip-plan-name">月卡</div>
+          <div class="vip-plan-price">19</div>
+          <div class="vip-plan-unit">/月</div>
+        </div>
+        <div class="vip-plan active">
+          <div class="vip-plan-badge">超值</div>
+          <div class="vip-plan-name">季卡</div>
+          <div class="vip-plan-price">49</div>
+          <div class="vip-plan-unit">/季</div>
+        </div>
+        <div class="vip-plan">
+          <div class="vip-plan-badge">优惠</div>
+          <div class="vip-plan-name">年卡</div>
+          <div class="vip-plan-price">199</div>
+          <div class="vip-plan-unit">/年</div>
+        </div>
+      </div>
+
+      <div class="vip-card">
+        <div class="vip-card-title">季卡优惠</div>
+        <div class="vip-price">
+          <span class="vip-price-symbol">¥</span>
+          <span class="vip-price-value">49</span>
+          <span class="vip-price-original">¥57</span>
+        </div>
+        <div class="vip-btn" onclick="showToast('跳转微信支付')">立即开通</div>
+      </div>
+
+      <div class="vip-features">
+        <div class="vip-feature">
+          <div class="vip-feature-icon">🎬</div>
+          <div class="vip-feature-text">无限导出高清视频</div>
+        </div>
+        <div class="vip-feature">
+          <div class="vip-feature-icon">🤖</div>
+          <div class="vip-feature-text">AI数字人无限使用</div>
+        </div>
+        <div class="vip-feature">
+          <div class="vip-feature-icon">🎨</div>
+          <div class="vip-feature-text">专属模板素材</div>
+        </div>
+        <div class="vip-feature">
+          <div class="vip-feature-icon">⚡</div>
+          <div class="vip-feature-text">极速渲染导出</div>
+        </div>
+        <div class="vip-feature">
+          <div class="vip-feature-icon">🎁</div>
+          <div class="vip-feature-text">专属客服支持</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Export -->
+    <div id="page-export" class="page">
+      <div class="export-header">
+        <div class="export-back" onclick="switchPage('editor')">←</div>
+        <div class="export-title">导出视频</div>
+        <div style="width: 44px;"></div>
+      </div>
+
+      <div class="export-preview">🎬</div>
+
+      <div class="export-section">
+        <div class="export-label">分辨率</div>
+        <div class="export-options">
+          <div class="export-option active">
+            <div class="export-option-name">720P</div>
+            <div class="export-option-desc">较快</div>
+          </div>
+          <div class="export-option">
+            <div class="export-option-name">1080P</div>
+            <div class="export-option-desc">清晰</div>
+          </div>
+          <div class="export-option">
+            <div class="export-option-name">4K</div>
+            <div class="export-option-desc">超清</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="export-section">
+        <div class="export-label">画质</div>
+        <div class="export-quality">
+          <div class="export-quality-item">
+            <div class="export-quality-name">流畅</div>
+            <div class="export-quality-size">~20MB</div>
+          </div>
+          <div class="export-quality-item active">
+            <div class="export-quality-name">标准</div>
+            <div class="export-quality-size">~50MB</div>
+          </div>
+          <div class="export-quality-item">
+            <div class="export-quality-name">高清</div>
+            <div class="export-quality-size">~100MB</div>
+          </div>
+          <div class="export-quality-item">
+            <div class="export-quality-name">无损</div>
+            <div class="export-quality-size">~200MB</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="export-section">
+        <div class="export-label">格式</div>
+        <div class="export-options">
+          <div class="export-option active">
+            <div class="export-option-name">MP4</div>
+          </div>
+          <div class="export-option">
+            <div class="export-option-name">MOV</div>
+          </div>
+          <div class="export-option">
+            <div class="export-option-name">GIF</div>
+          </div>
+        </div>
+      </div>
+
+      <div style="padding: 20px;">
+        <div class="btn btn-primary btn-full" onclick="showToast('开始导出...')">导出视频</div>
+      </div>
+    </div>
+
+    <!-- Material -->
+    <div id="page-material" class="page">
+      <div class="material-header">
+        <div class="material-back" onclick="switchPage('editor')">←</div>
+        <div class="material-title">素材库</div>
+        <div class="btn" style="padding: 8px 16px; font-size: 14px;" onclick="showToast('上传素材')">+ 上传</div>
+      </div>
+
+      <div class="material-tabs">
+        <div class="material-tab active">全部</div>
+        <div class="material-tab">视频</div>
+        <div class="material-tab">图片</div>
+        <div class="material-tab">音频</div>
+      </div>
+
+      <div class="material-grid">
+        <div class="material-item" onclick="selectMaterial(this)">
+          🎬
+          <div class="material-item-selected">✓</div>
+        </div>
+        <div class="material-item" onclick="selectMaterial(this)">
+          🎬
+          <div class="material-item-selected">✓</div>
+        </div>
+        <div class="material-item" onclick="selectMaterial(this)">
+          🖼️
+          <div class="material-item-selected">✓</div>
+        </div>
+        <div class="material-item" onclick="selectMaterial(this)">
+          🖼️
+          <div class="material-item-selected">✓</div>
+        </div>
+        <div class="material-item" onclick="selectMaterial(this)">
+          🎬
+          <div class="material-item-selected">✓</div>
+        </div>
+        <div class="material-item" onclick="selectMaterial(this)">
+          🖼️
+          <div class="material-item-selected">✓</div>
+        </div>
+        <div class="material-item" onclick="selectMaterial(this)">
+          🎬
+          <div class="material-item-selected">✓</div>
+        </div>
+        <div class="material-item" onclick="selectMaterial(this)">
+          🎵
+          <div class="material-item-selected">✓</div>
+        </div>
+        <div class="material-item" onclick="selectMaterial(this)">
+          🖼️
+          <div class="material-item-selected">✓</div>
+        </div>
+      </div>
+
+      <div style="padding: 20px; position: fixed; bottom: 83px; left: 0; right: 0; max-width: 430px; margin: 0 auto;">
+        <div class="btn btn-primary btn-full" onclick="showToast('添加选中素材')">添加选中素材</div>
+      </div>
+    </div>
+
+    <!-- Publish -->
+    <div id="page-publish" class="page">
+      <div class="publish-header">
+        <div class="publish-back" onclick="switchPage('editor')">←</div>
+        <div class="publish-title">发布作品</div>
+        <div class="publish-save" onclick="showToast('保存到草稿')">存草稿</div>
+      </div>
+
+      <div class="publish-preview">🎬</div>
+
+      <div class="publish-cover">
+        <div class="publish-cover-box">
+          <div>🖼️</div>
+          <div class="publish-cover-text">点击添加封面</div>
+        </div>
+      </div>
+
+      <div class="publish-form">
+        <div class="publish-field">
+          <div class="publish-field-label">标题</div>
+          <input class="publish-field-input" placeholder="请输入作品标题" value="春日踏青视频">
+        </div>
+
+        <div class="publish-field">
+          <div class="publish-field-label">描述</div>
+          <input class="publish-field-input" placeholder="说点什么...">
+        </div>
+
+        <div class="publish-field">
+          <div class="publish-field-label">标签</div>
+          <div class="publish-tags">
+            <div class="publish-tag active">踏青</div>
+            <div class="publish-tag">春天</div>
+            <div class="publish-tag">旅行</div>
+            <div class="publish-tag">生活</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="publish-form">
+        <div class="publish-switch">
+          <div class="publish-switch-label">公开</div>
+          <div class="publish-switch-toggle active" onclick="this.classList.toggle('active')"></div>
+        </div>
+        <div class="publish-switch">
+          <div class="publish-switch-label">允许下载</div>
+          <div class="publish-switch-toggle active" onclick="this.classList.toggle('active')"></div>
+        </div>
+        <div class="publish-switch">
+          <div class="publish-switch-label">允许评论</div>
+          <div class="publish-switch-toggle active" onclick="this.classList.toggle('active')"></div>
+        </div>
+      </div>
+
+      <div style="padding: 20px;">
+        <div class="btn btn-primary btn-full" onclick="showToast('发布成功')">发布作品</div>
+      </div>
+    </div>
+
+    <!-- Points Mall -->
+    <div id="page-points-mall" class="page">
+      <div class="header">
+        <div class="back-btn" onclick="switchPage('profile')">←</div>
+        <div class="header-title">积分商城</div>
+      </div>
+      <div style="padding: 20px;">
+        <div style="background: linear-gradient(135deg, #FFD60A, #FF9F0A); border-radius: 16px; padding: 20px; margin-bottom: 20px;">
+          <div style="font-size: 14px; color: rgba(0,0,0,0.6);">当前积分</div>
+          <div style="font-size: 32px; font-weight: 700; color: #000;">1,280</div>
+        </div>
+        <div style="display: flex; gap: 10px; margin-bottom: 20px;">
+          <div style="flex:1; background: var(--bg-secondary); border-radius: 12px; padding: 16px; text-align: center;">
+            <div style="font-size: 24px;">👥</div>
+            <div style="font-size: 12px; color: var(--text-tertiary);">邀请</div>
+          </div>
+          <div style="flex:1; background: var(--bg-secondary); border-radius: 12px; padding: 16px; text-align: center;">
+            <div style="font-size: 24px;">📅</div>
+            <div style="font-size: 12px; color: var(--text-tertiary);">签到</div>
+          </div>
+          <div style="flex:1; background: var(--bg-secondary); border-radius: 12px; padding: 16px; text-align: center;">
+            <div style="font-size: 24px;">🎬</div>
+            <div style="font-size: 12px; color: var(--text-tertiary);">发布</div>
+          </div>
+        </div>
+        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px;">
+          <div style="background: var(--bg-secondary); border-radius: 16px; padding: 16px;">
+            <div style="font-size: 40px; text-align: center; margin-bottom: 12px;">👑</div>
+            <div style="font-size: 15px; font-weight: 500; margin-bottom: 8px;">VIP月卡</div>
+            <div style="font-size: 20px; font-weight: 700; color: #FFD60A;">900 积分</div>
+          </div>
+          <div style="background: var(--bg-secondary); border-radius: 16px; padding: 16px;">
+            <div style="font-size: 40px; text-align: center; margin-bottom: 12px;">💎</div>
+            <div style="font-size: 15px; font-weight: 500; margin-bottom: 8px;">500积分</div>
+            <div style="font-size: 20px; font-weight: 700; color: #FFD60A;">450 积分</div>
+          </div>
+          <div style="background: var(--bg-secondary); border-radius: 16px; padding: 16px;">
+            <div style="font-size: 40px; text-align: center; margin-bottom: 12px;">🎨</div>
+            <div style="font-size: 15px; font-weight: 500; margin-bottom: 8px;">定制模板</div>
+            <div style="font-size: 20px; font-weight: 700; color: #FFD60A;">5000 积分</div>
+          </div>
+          <div style="background: var(--bg-secondary); border-radius: 16px; padding: 16px;">
+            <div style="font-size: 40px; text-align: center; margin-bottom: 12px;">🤖</div>
+            <div style="font-size: 15px; font-weight: 500; margin-bottom: 8px;">AI次数包</div>
+            <div style="font-size: 20px; font-weight: 700; color: #FFD60A;">300 积分</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Customer Service -->
+    <div id="page-customer-service" class="page">
+      <div class="header">
+        <div class="back-btn" onclick="switchPage('profile')">←</div>
+        <div class="header-title">客服与帮助</div>
+      </div>
+      <div style="padding: 20px;">
+        <div style="display: flex; gap: 12px; margin-bottom: 20px;">
+          <div style="flex:1; background: var(--bg-secondary); border-radius: 12px; padding: 20px; text-align: center;">
+            <div style="font-size: 28px; margin-bottom: 8px;">📞</div>
+            <div style="font-size: 13px;">电话客服</div>
+          </div>
+          <div style="flex:1; background: var(--bg-secondary); border-radius: 12px; padding: 20px; text-align: center;" onclick="showToast('在线客服')">
+            <div style="font-size: 28px; margin-bottom: 8px;">💬</div>
+            <div style="font-size: 13px;">在线客服</div>
+          </div>
+          <div style="flex:1; background: var(--bg-secondary); border-radius: 12px; padding: 20px; text-align: center;">
+            <div style="font-size: 28px; margin-bottom: 8px;">📧</div>
+            <div style="font-size: 13px;">邮件联系</div>
+          </div>
+        </div>
+        <div style="background: var(--bg-secondary); border-radius: 16px; padding: 20px;">
+          <div style="font-size: 16px; font-weight: 600; margin-bottom: 16px;">常见问题</div>
+          <div style="border-bottom: 0.5px solid var(--separator); padding: 12px 0;">
+            <div style="font-size: 14px; margin-bottom: 4px;">如何开通VIP会员？</div>
+            <div style="font-size: 12px; color: var(--text-tertiary);">点击「我的」-「VIP会员」即可开通</div>
+          </div>
+          <div style="border-bottom: 0.5px solid var(--separator); padding: 12px 0;">
+            <div style="font-size: 14px; margin-bottom: 4px;">积分有什么用？</div>
+            <div style="font-size: 12px; color: var(--text-tertiary);">积分可兑换VIP卡、模板等商品</div>
+          </div>
+          <div style="padding: 12px 0;">
+            <div style="font-size: 14px; margin-bottom: 4px;">如何导出视频？</div>
+            <div style="font-size: 12px; color: var(--text-tertiary);">编辑器中点击「导出」按钮即可</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Help -->
+    <div id="page-help" class="page">
+      <div class="header">
+        <div class="back-btn" onclick="switchPage('profile')">←</div>
+        <div class="header-title">使用帮助</div>
+      </div>
+      <div style="padding: 20px;">
+        <div style="background: var(--bg-secondary); border-radius: 16px; padding: 20px; margin-bottom: 16px;">
+          <div style="font-size: 20px; margin-bottom: 12px;">📖</div>
+          <div style="font-size: 16px; font-weight: 600; margin-bottom: 8px;">新手教程</div>
+          <div style="font-size: 13px; color: var(--text-secondary); line-height: 1.6;">
+            1. 首页点击「剪同款」选择模板<br>
+            2. 上传您的照片或视频素材<br>
+            3. 选择音乐和滤镜<br>
+            4. 添加文字和贴纸<br>
+            5. 导出分享到社交平台
+          </div>
+        </div>
+        <div style="background: var(--bg-secondary); border-radius: 16px; padding: 20px; margin-bottom: 16px;">
+          <div style="font-size: 20px; margin-bottom: 12px;">🧑‍💻</div>
+          <div style="font-size: 16px; font-weight: 600; margin-bottom: 8px;">数字人教程</div>
+          <div style="font-size: 13px; color: var(--text-secondary); line-height: 1.6;">
+            1. 进入「数字人」页面<br>
+            2. 选择喜欢的数字人形象<br>
+            3. 输入要播报的文案<br>
+            4. 选择音色和语速<br>
+            5. 生成视频
+          </div>
+        </div>
+        <div style="background: var(--bg-secondary); border-radius: 16px; padding: 20px; margin-bottom: 16px;">
+          <div style="font-size: 20px; margin-bottom: 12px;">👑</div>
+          <div style="font-size: 16px; font-weight: 600; margin-bottom: 8px;">VIP特权</div>
+          <div style="font-size: 13px; color: var(--text-secondary); line-height: 1.6;">
+            • 无限次导出高清视频<br>
+            • AI数字人无限使用<br>
+            • 专属模板素材<br>
+            • 极速渲染导出
+          </div>
+        </div>
+        <div style="background: var(--bg-secondary); border-radius: 16px; padding: 20px;">
+          <div style="font-size: 20px; margin-bottom: 12px;">💎</div>
+          <div style="font-size: 16px; font-weight: 600; margin-bottom: 8px;">积分攻略</div>
+          <div style="font-size: 13px; color: var(--text-secondary); line-height: 1.6;">
+            • 每日签到 +10积分<br>
+            • 邀请好友 +100积分<br>
+            • 发布作品 +50积分
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- AI一键成片 -->
+    <div id="page-ai-generate" class="page">
+      <div class="header">
+        <div class="back-btn" onclick="switchPage('home')">←</div>
+        <div class="header-title">AI一键成片</div>
+      </div>
+      <div style="padding: 20px;">
+        <div style="background: linear-gradient(135deg, #5856D6, #AF52DE); border-radius: 16px; padding: 24px; margin-bottom: 20px;">
+          <div style="font-size: 32px; margin-bottom: 12px;">🤖</div>
+          <div style="font-size: 18px; font-weight: 600; margin-bottom: 8px;">AI智能生成</div>
+          <div style="font-size: 13px; color: rgba(255,255,255,0.7);">输入主题，AI自动生成完整视频</div>
+        </div>
+        
+        <div style="margin-bottom: 20px;">
+          <div style="font-size: 14px; color: var(--text-secondary); margin-bottom: 12px;">视频主题</div>
+          <div style="background: var(--bg-secondary); border-radius: 12px; padding: 16px;">
+            <input style="width: 100%; background: none; border: none; color: var(--text); font-size: 15px;" placeholder="描述你想要什么样的视频">
+          </div>
+        </div>
+
+        <div style="margin-bottom: 20px;">
+          <div style="font-size: 14px; color: var(--text-secondary); margin-bottom: 12px;">选择模板类型</div>
+          <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px;">
+            <div style="background: var(--bg-secondary); border-radius: 12px; padding: 12px; text-align: center;">
+              <div style="font-size: 24px;">🛍️</div>
+              <div style="font-size: 12px; margin-top: 4px;">种草</div>
+            </div>
+            <div style="background: var(--bg-secondary); border-radius: 12px; padding: 12px; text-align: center;">
+              <div style="font-size: 24px;">📚</div>
+              <div style="font-size: 12px; margin-top: 4px;">知识</div>
+            </div>
+            <div style="background: var(--bg-secondary); border-radius: 12px; padding: 12px; text-align: center;">
+              <div style="font-size: 24px;">🍜</div>
+              <div style="font-size: 12px; margin-top: 4px;">美食</div>
+            </div>
+            <div style="background: var(--bg-secondary); border-radius: 12px; padding: 12px; text-align: center;">
+              <div style="font-size: 24px;">📷</div>
+              <div style="font-size: 12px; margin-top: 4px;">日常</div>
+            </div>
+          </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 20px;">
+          <div style="background: var(--bg-secondary); border-radius: 12px; padding: 12px; text-align: center;">
+            <div style="font-size: 24px;">🎁</div>
+            <div style="font-size: 12px; margin-top: 4px;">电商</div>
+          </div>
+          <div style="background: var(--bg-secondary); border-radius: 12px; padding: 12px; text-align: center;">
+            <div style="font-size: 24px;">🎭</div>
+            <div style="font-size: 12px; margin-top: 4px;">剧情</div>
+          </div>
+          <div style="background: var(--bg-secondary); border-radius: 12px; padding: 12px; text-align: center;">
+            <div style="font-size: 24px;">💕</div>
+            <div style="font-size: 12px; margin-top: 4px;">情感</div>
+          </div>
+          <div style="background: var(--bg-secondary); border-radius: 12px; padding: 12px; text-align: center;">
+            <div style="font-size: 24px;">📖</div>
+            <div style="font-size: 12px; margin-top: 4px;">教程</div>
+          </div>
+        </div>
+
+        <div class="btn btn-primary" style="padding: 16px; text-align: center; border-radius: 14px; background: linear-gradient(135deg, #5856D6, #AF52DE); color: white; font-weight: 600;" onclick="showToast('AI生成中...')">
+          一键生成视频
+        </div>
+      </div>
+    </div>
+
+    <!-- 智能文案 -->
+    <div id="page-smart-copy" class="page">
+      <div class="header">
+        <div class="back-btn" onclick="switchPage('home')">←</div>
+        <div class="header-title">智能文案</div>
+      </div>
+      <div style="padding: 20px;">
+        <div style="margin-bottom: 20px;">
+          <div style="font-size: 14px; color: var(--text-secondary); margin-bottom: 12px;">选择文案类型</div>
+          <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;">
+            <div style="background: var(--bg-secondary); border-radius: 12px; padding: 16px; text-align: center;">
+              <div style="font-size: 24px;">🛍️</div>
+              <div style="font-size: 12px; margin-top: 4px;">种草文案</div>
+            </div>
+            <div style="background: var(--bg-secondary); border-radius: 12px; padding: 16px; text-align: center;">
+              <div style="font-size: 24px;">🎬</div>
+              <div style="font-size: 12px; margin-top: 4px;">短视频脚本</div>
+            </div>
+            <div style="background: #5856D6; border-radius: 12px; padding: 16px; text-align: center;">
+              <div style="font-size: 24px;">📱</div>
+              <div style="font-size: 12px; margin-top: 4px;">朋友圈</div>
+            </div>
+          </div>
+        </div>
+        <div style="margin-bottom: 20px;">
+          <div style="font-size: 14px; color: var(--text-secondary); margin-bottom: 12px;">输入产品/主题</div>
+          <div style="background: var(--bg-secondary); border-radius: 12px; padding: 16px;">
+            <input style="width: 100%; background: none; border: none; color: var(--text); font-size: 15px;" placeholder="输入产品名称或视频主题">
+          </div>
+        </div>
+        <div style="margin-bottom: 20px;">
+          <div style="font-size: 14px; color: var(--text-secondary); margin-bottom: 12px;">产品特点（可选）</div>
+          <div style="background: var(--bg-secondary); border-radius: 12px; padding: 16px;">
+            <textarea style="width: 100%; background: none; border: none; color: var(--text); font-size: 14px; min-height: 80px; resize: none;" placeholder="输入产品特点，用逗号分隔"></textarea>
+          </div>
+        </div>
+        <div class="btn btn-primary" style="padding: 16px; text-align: center; border-radius: 14px; background: linear-gradient(135deg, #FFD60A, #FF9F0A); color: #000; font-weight: 600;" onclick="showToast('AI生成中...')">
+          一键生成文案
+        </div>
+      </div>
+    </div>
+
+    <!-- 素材商城 -->
+    <div id="page-material-mall" class="page">
+      <div class="header">
+        <div class="back-btn" onclick="switchPage('home')">←</div>
+        <div class="header-title">素材商城</div>
+      </div>
+      <div style="padding: 0 20px;">
+        <div class="category-scroll" style="margin-bottom: 16px;">
+          <div class="category-list">
+            <div class="category-item active">全部</div>
+            <div class="category-item">背景</div>
+            <div class="category-item">音乐</div>
+            <div class="category-item">特效</div>
+            <div class="category-item">贴纸</div>
+            <div class="category-item">字幕</div>
+          </div>
+        </div>
+        <div class="video-grid">
+          <div class="video-item">
+            <div class="video-cover">🖼️</div>
+            <div class="video-info">
+              <div class="video-title">高清背景</div>
+              <div class="video-meta">
+                <div class="video-stats">1,280个</div>
+              </div>
+            </div>
+          </div>
+          <div class="video-item">
+            <div class="video-cover">🎵</div>
+            <div class="video-info">
+              <div class="video-title">热门音乐</div>
+              <div class="video-meta">
+                <div class="video-stats">2,560首</div>
+              </div>
+            </div>
+          </div>
+          <div class="video-item">
+            <div class="video-cover">✨</div>
+            <div class="video-info">
+              <div class="video-title">特效转场</div>
+              <div class="video-meta">
+                <div class="video-stats">890个</div>
+              </div>
+            </div>
+          </div>
+          <div class="video-item">
+            <div class="video-cover">💫</div>
+            <div class="video-info">
+              <div class="video-title">动态贴纸</div>
+              <div class="video-meta">
+                <div class="video-stats">3,200个</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 批量生成 -->
+    <div id="page-batch-generate" class="page">
+      <div class="header">
+        <div class="back-btn" onclick="switchPage('home')">←</div>
+        <div class="header-title">批量生成</div>
+      </div>
+      <div style="padding: 20px;">
+        <div style="background: linear-gradient(135deg, #1C1C1E 0%, #2C2C2E 100%); border-radius: 20px; padding: 32px; text-align: center; margin-bottom: 24px;">
+          <div style="font-size: 48px; margin-bottom: 12px;">📦</div>
+          <div style="font-size: 18px; font-weight: 600; margin-bottom: 8px;">批量生成视频</div>
+          <div style="font-size: 13px; color: var(--text-secondary);">一次性生成多个视频，提高效率</div>
+        </div>
+        <div style="margin-bottom: 20px;">
+          <div style="font-size: 14px; color: var(--text-secondary); margin-bottom: 12px;">生成数量</div>
+          <div style="display: flex; align-items: center; gap: 20px; background: var(--bg-secondary); border-radius: 12px; padding: 16px;">
+            <div style="font-size: 24px; color: var(--text-secondary);" onclick="showToast('减少')">−</div>
+            <div style="flex: 1; text-align: center; font-size: 24px; font-weight: 600;">10</div>
+            <div style="font-size: 24px;" onclick="showToast('增加')">+</div>
+          </div>
+          <div style="font-size: 12px; color: var(--text-tertiary); margin-top: 8px;">每次最多生成100个</div>
+        </div>
+        <div style="margin-bottom: 20px;">
+          <div style="font-size: 14px; color: var(--text-secondary); margin-bottom: 12px;">自动生成内容</div>
+          <div style="background: var(--bg-secondary); border-radius: 12px; padding: 12px 16px; font-size: 14px;">
+            <div>✓ 自动生成不同标题</div>
+            <div>✓ 自动分配不同标签</div>
+            <div>✓ 随机匹配背景音乐</div>
+          </div>
+        </div>
+        <div class="btn btn-primary" style="padding: 16px; text-align: center; border-radius: 14px; font-weight: 600;" onclick="showToast('开始批量生成...')">
+          开始批量生成
+        </div>
+      </div>
+    </div>
+
+    <!-- 图文转视频 -->
+    <div id="page-image-to-video" class="page">
+      <div class="header">
+        <div class="back-btn" onclick="switchPage('home')">←</div>
+        <div class="header-title">图文转视频</div>
+      </div>
+      <div style="padding: 20px;">
+        <div style="background: var(--bg-secondary); border-radius: 16px; padding: 40px; text-align: center; border: 2px dashed var(--separator); margin-bottom: 20px;">
+          <div style="font-size: 48px; margin-bottom: 12px;">🖼️</div>
+          <div style="font-size: 15px; margin-bottom: 8px;">上传图片素材</div>
+          <div style="font-size: 12px; color: var(--text-tertiary);">支持JPG、PNG格式，最多20张</div>
+        </div>
+        <div style="margin-bottom: 20px;">
+          <div style="font-size: 14px; color: var(--text-secondary); margin-bottom: 12px;">文案内容</div>
+          <div style="background: var(--bg-secondary); border-radius: 12px; padding: 16px;">
+            <textarea style="width: 100%; background: none; border: none; color: var(--text); font-size: 14px; min-height: 100px; resize: none;" placeholder="输入文案内容，AI自动匹配字幕和配音"></textarea>
+          </div>
+        </div>
+        <div style="margin-bottom: 20px;">
+          <div style="font-size: 14px; color: var(--text-secondary); margin-bottom: 12px;">配音</div>
+          <div style="display: flex; gap: 10px;">
+            <div style="padding: 10px 16px; background: #007AFF; border-radius: 20px; font-size: 14px;">🎤 女声-温柔</div>
+            <div style="padding: 10px 16px; background: var(--bg-secondary); border-radius: 20px; font-size: 14px;">🎤 男声-成熟</div>
+          </div>
+        </div>
+        <div class="btn btn-primary" style="padding: 16px; text-align: center; border-radius: 14px; background: linear-gradient(135deg, #FFD60A, #FF9F0A); color: #000; font-weight: 600;" onclick="showToast('转换中...')">
+          一键转换
+        </div>
+      </div>
+    </div>
+
+    <!-- 多平台发布 -->
+    <div id="page-publish-platform" class="page">
+      <div class="header">
+        <div class="back-btn" onclick="switchPage('home')">←</div>
+        <div class="header-title">多平台发布</div>
+      </div>
+      <div style="padding: 20px;">
+        <div style="margin-bottom: 20px;">
+          <div style="font-size: 14px; color: var(--text-secondary); margin-bottom: 12px;">选择平台</div>
+          <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px;">
+            <div style="background: #007AFF; border-radius: 12px; padding: 16px; text-align: center; border: 2px solid #007AFF;">
+              <div style="font-size: 28px; margin-bottom: 8px;">🎵</div>
+              <div style="font-size: 13px;">抖音</div>
+              <div style="font-size: 10px; color: #30D158; margin-top: 4px;">✓ 已绑定</div>
+            </div>
+            <div style="background: var(--bg-secondary); border-radius: 12px; padding: 16px; text-align: center;">
+              <div style="font-size: 28px; margin-bottom: 8px;">🎯</div>
+              <div style="font-size: 13px;">快手</div>
+              <div style="font-size: 10px; color: #30D158; margin-top: 4px;">✓ 已绑定</div>
+            </div>
+            <div style="background: var(--bg-secondary); border-radius: 12px; padding: 16px; text-align: center; opacity: 0.5;">
+              <div style="font-size: 28px; margin-bottom: 8px;">📕</div>
+              <div style="font-size: 13px;">小红书</div>
+              <div style="font-size: 10px; color: var(--text-tertiary); margin-top: 4px;">未绑定</div>
+            </div>
+          </div>
+        </div>
+        <div style="margin-bottom: 20px;">
+          <div style="font-size: 14px; color: var(--text-secondary); margin-bottom: 12px;">发布设置</div>
+          <div style="background: var(--bg-secondary); border-radius: 12px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; padding: 16px; border-bottom: 1px solid var(--separator);">
+              <span>同步到主页</span>
+              <div style="width: 50px; height: 28px; background: #007AFF; border-radius: 14px; position: relative;">
+                <div style="position: absolute; top: 3px; right: 3px; width: 22px; height: 22px; background: white; border-radius: 50%;"></div>
+              </div>
+            </div>
+            <div style="display: flex; justify-content: space-between; align-items: center; padding: 16px;">
+              <span>开启评论</span>
+              <div style="width: 50px; height: 28px; background: #007AFF; border-radius: 14px; position: relative;">
+                <div style="position: absolute; top: 3px; right: 3px; width: 22px; height: 22px; background: white; border-radius: 50%;"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="btn btn-primary" style="padding: 16px; text-align: center; border-radius: 14px; font-weight: 600;" onclick="showToast('发布中...')">
+          立即发布 (2个平台)
+        </div>
+      </div>
+    </div>
+
+    <!-- 创作者社区 -->
+    <div id="page-community" class="page">
+      <div class="header">
+        <div class="header-title">创作者社区</div>
+      </div>
+      <div style="padding: 0 20px; display: flex; gap: 20px; border-bottom: 1px solid var(--separator);">
+        <div style="padding: 14px 0; font-size: 15px; font-weight: 600; border-bottom: 2px solid #007AFF;">推荐</div>
+        <div style="padding: 14px 0; font-size: 15px; color: var(--text-secondary);">关注</div>
+        <div style="padding: 14px 0; font-size: 15px; color: var(--text-secondary);">热门</div>
+      </div>
+      <div style="padding: 20px;">
+        <div style="background: var(--bg-secondary); border-radius: 16px; padding: 16px; margin-bottom: 16px;">
+          <div style="display: flex; align-items: center; margin-bottom: 12px;">
+            <div style="width: 44px; height: 44px; background: var(--bg-tertiary); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 24px; margin-right: 12px;">🎬</div>
+            <div style="flex: 1;">
+              <div style="font-size: 15px; font-weight: 600;">视频达人</div>
+              <div style="font-size: 12px; color: var(--text-tertiary);">2小时前</div>
+            </div>
+            <div style="padding: 6px 14px; background: #007AFF; border-radius: 20px; font-size: 13px;">+ 关注</div>
+          </div>
+          <div style="font-size: 16px; font-weight: 600; margin-bottom: 8px;">分享一个超火的模板</div>
+          <div style="font-size: 14px; color: var(--text-secondary); margin-bottom: 12px; line-height: 1.5;">这个模板真的太好用了，你们一定要试试！</div>
+          <div style="height: 180px; background: var(--bg-tertiary); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 48px; margin-bottom: 12px;">📹</div>
+          <div style="display: flex; gap: 24px; font-size: 14px; color: var(--text-secondary);">
+            <span>❤️ 1,280</span>
+            <span>💬 56</span>
+            <span>🔗 分享</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 数据洞察 -->
+    <div id="page-analytics" class="page">
+      <div class="header">
+        <div class="header-title">数据洞察</div>
+      </div>
+      <div style="padding: 20px;">
+        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 24px;">
+          <div style="background: var(--bg-secondary); border-radius: 16px; padding: 20px; text-align: center;">
+            <div style="font-size: 24px; font-weight: 700; color: #007AFF;">12.8万</div>
+            <div style="font-size: 12px; color: var(--text-tertiary);">总播放</div>
+          </div>
+          <div style="background: var(--bg-secondary); border-radius: 16px; padding: 20px; text-align: center;">
+            <div style="font-size: 24px; font-weight: 700; color: #30D158;">1.2万</div>
+            <div style="font-size: 12px; color: var(--text-tertiary);">总点赞</div>
+          </div>
+          <div style="background: var(--bg-secondary); border-radius: 16px; padding: 20px; text-align: center;">
+            <div style="font-size: 24px; font-weight: 700; color: #FF9F0A;">2.8K</div>
+            <div style="font-size: 12px; color: var(--text-tertiary);">粉丝</div>
+          </div>
+          <div style="background: var(--bg-secondary); border-radius: 16px; padding: 20px; text-align: center;">
+            <div style="font-size: 24px; font-weight: 700; color: #FFD60A;">¥580</div>
+            <div style="font-size: 12px; color: var(--text-tertiary);">总收入</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tab Bar -->
+    <div class="tab-bar">
+      <div class="tab-item active" onclick="switchPage('home')">
+        <div class="tab-icon">🏠</div>
+        <div class="tab-label">首页</div>
+      </div>
+      <div class="tab-item" onclick="switchPage('search')">
+        <div class="tab-icon">🔍</div>
+        <div class="tab-label">搜索</div>
+      </div>
+      <div class="tab-item" onclick="switchPage('projects')">
+        <div class="tab-icon">📁</div>
+        <div class="tab-label">项目</div>
+      </div>
+      <div class="tab-item" onclick="switchPage('messages')">
+        <div class="tab-icon">💬</div>
+        <div class="tab-label">消息</div>
+      </div>
+      <div class="tab-item" onclick="switchPage('profile')">
+        <div class="tab-icon">👤</div>
+        <div class="tab-label">我的</div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function switchPage(pageName) {
+      document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+      document.getElementById('page-' + pageName).classList.add('active');
+      
+      const tabMap = { 'home': 0, 'search': 1, 'projects': 2, 'messages': 3, 'profile': 4 };
+      document.querySelectorAll('.tab-item').forEach((t, i) => {
+        t.classList.toggle('active', i === tabMap[pageName]);
+      });
+    }
+
+    function selectMaterial(el) {
+      el.classList.toggle('selected');
+    }
+
+    function showToast(message) {
+      const toast = document.getElementById('toast');
+      toast.textContent = message;
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 2000);
+    }
+
+    function togglePlay() {
+      showToast('播放/暂停');
+    }
+
+    function copyCode() {
+      navigator.clipboard.writeText('ABC123').then(() => {
+        showToast('邀请码已复制');
+      });
+    }
+  </script>
+</body>
+</html>

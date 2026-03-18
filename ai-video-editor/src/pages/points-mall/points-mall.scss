@@ -1,0 +1,190 @@
+.points-mall {
+  min-height: 100vh;
+  background: #0A0A0C;
+  color: #FFFFFF;
+  padding-bottom: 120px;
+
+  .header {
+    padding: 60px 20px 30px;
+    background: linear-gradient(180deg, #1C1C1E 0%, #0A0A0C 100%);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .header-title {
+    font-size: 28px;
+    font-weight: 700;
+  }
+
+  .points-display {
+    text-align: right;
+  }
+
+  .points-value {
+    font-size: 32px;
+    font-weight: 700;
+    color: #FFD60A;
+    display: block;
+  }
+
+  .points-label {
+    font-size: 12px;
+    color: #8E8E93;
+  }
+
+  .earn-points {
+    margin: 20px;
+    padding: 20px;
+    background: #1C1C1E;
+    border-radius: 16px;
+  }
+
+  .earn-title {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 16px;
+  }
+
+  .earn-list {
+    display: flex;
+    gap: 12px;
+  }
+
+  .earn-item {
+    flex: 1;
+    background: #2C2C2E;
+    border-radius: 12px;
+    padding: 16px 12px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .earn-icon {
+    font-size: 24px;
+  }
+
+  .earn-name {
+    font-size: 13px;
+    color: #FFFFFF;
+  }
+
+  .earn-reward {
+    font-size: 12px;
+    color: #30D158;
+    font-weight: 500;
+  }
+
+  .tabs {
+    display: flex;
+    padding: 0 20px;
+    gap: 8px;
+    margin-bottom: 16px;
+  }
+
+  .tab {
+    padding: 10px 16px;
+    font-size: 14px;
+    color: #8E8E93;
+    border-radius: 20px;
+    background: #1C1C1E;
+    white-space: nowrap;
+
+    &.active {
+      background: #007AFF;
+      color: #FFFFFF;
+    }
+  }
+
+  .goods-list {
+    padding: 0 20px;
+    height: calc(100vh - 380px);
+  }
+
+  .goods-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+
+  .goods-item {
+    background: #1C1C1E;
+    border-radius: 16px;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .goods-image {
+    height: 100px;
+    background: #2C2C2E;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .goods-emoji {
+    font-size: 48px;
+  }
+
+  .goods-info {
+    flex: 1;
+  }
+
+  .goods-name {
+    font-size: 15px;
+    font-weight: 500;
+    display: block;
+    margin-bottom: 8px;
+  }
+
+  .goods-price {
+    display: flex;
+    align-items: baseline;
+    gap: 4px;
+  }
+
+  .price-value {
+    font-size: 20px;
+    font-weight: 700;
+    color: #FFD60A;
+  }
+
+  .price-unit {
+    font-size: 12px;
+    color: #FFD60A;
+  }
+
+  .price-original {
+    font-size: 12px;
+    color: #636366;
+    text-decoration: line-through;
+    margin-left: 8px;
+  }
+
+  .goods-stock {
+    font-size: 12px;
+    color: #8E8E93;
+    margin-top: 4px;
+  }
+
+  .goods-btn {
+    background: #007AFF;
+    color: #FFFFFF;
+    text-align: center;
+    padding: 12px;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 600;
+
+    &.disabled {
+      background: #3A3A3C;
+      color: #8E8E93;
+    }
+  }
+}

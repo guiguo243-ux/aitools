@@ -1,0 +1,153 @@
+.smart-copy {
+  min-height: 100vh;
+  background: #0A0A0C;
+  color: #FFFFFF;
+
+  .header {
+    padding: 60px 20px 20px;
+  }
+
+  .header-title {
+    font-size: 28px;
+    font-weight: 700;
+  }
+
+  .content {
+    padding: 0 20px 100px;
+  }
+
+  .section {
+    margin-bottom: 24px;
+  }
+
+  .section-title {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 12px;
+  }
+
+  .type-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+  }
+
+  .type-item {
+    background: #1C1C1E;
+    border-radius: 12px;
+    padding: 16px;
+    text-align: center;
+    border: 2px solid transparent;
+
+    &.active {
+      border-color: #007AFF;
+      background: rgba(0, 122, 255, 0.1);
+    }
+  }
+
+  .type-icon {
+    font-size: 28px;
+    margin-bottom: 8px;
+  }
+
+  .type-name {
+    font-size: 13px;
+  }
+
+  .tone-list {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  .tone-item {
+    padding: 10px 16px;
+    background: #1C1C1E;
+    border-radius: 20px;
+    font-size: 14px;
+
+    &.active {
+      background: #007AFF;
+    }
+  }
+
+  .input-box {
+    background: #1C1C1E;
+    border-radius: 12px;
+    padding: 16px;
+  }
+
+  .generate-btn {
+    background: linear-gradient(135deg, #FFD60A, #FF9F0A);
+    color: #000000;
+    text-align: center;
+    padding: 16px;
+    border-radius: 14px;
+    font-size: 17px;
+    font-weight: 600;
+    margin-top: 20px;
+  }
+
+  .result-box {
+    background: #1C1C1E;
+    border-radius: 16px;
+    padding: 20px;
+    margin-top: 24px;
+  }
+
+  .result-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+  }
+
+  .result-title {
+    font-size: 16px;
+    font-weight: 600;
+  }
+
+  .copy-btn {
+    color: #007AFF;
+    font-size: 14px;
+  }
+
+  .result-content {
+    font-size: 14px;
+    line-height: 1.8;
+    white-space: pre-wrap;
+    color: #E5E5E5;
+  }
+
+  .loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .loading-box {
+    text-align: center;
+  }
+
+  .loading-icon {
+    font-size: 48px;
+    margin-bottom: 16px;
+    animation: pulse 1s infinite;
+  }
+
+  .loading-text {
+    font-size: 16px;
+    color: #8E8E93;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+  }
+}

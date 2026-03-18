@@ -1,0 +1,79 @@
+.help {
+  min-height: 100vh;
+  background: #0A0A0C;
+  color: #FFFFFF;
+  padding-bottom: 40px;
+
+  .header {
+    padding: 60px 20px 30px;
+    background: linear-gradient(180deg, #1C1C1E 0%, #0A0A0C 100%);
+  }
+
+  .header-title {
+    font-size: 28px;
+    font-weight: 700;
+  }
+
+  .version-info {
+    text-align: center;
+    padding: 20px;
+  }
+
+  .version-text {
+    color: #8E8E93;
+    font-size: 14px;
+  }
+
+  .guide-list {
+    padding: 0 20px;
+  }
+
+  .guide-item {
+    background: #1C1C1E;
+    border-radius: 16px;
+    margin-bottom: 16px;
+    overflow: hidden;
+  }
+
+  .guide-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 20px;
+    border-bottom: 1px solid #2C2C2E;
+  }
+
+  .guide-icon {
+    font-size: 24px;
+  }
+
+  .guide-title {
+    font-size: 16px;
+    font-weight: 600;
+  }
+
+  .guide-content {
+    padding: 20px;
+    font-size: 14px;
+    color: #8E8E93;
+    line-height: 1.8;
+    white-space: pre-line;
+  }
+
+  .footer {
+    text-align: center;
+    padding: 40px 20px;
+  }
+
+  .footer-text {
+    display: block;
+    color: #636366;
+    font-size: 12px;
+    margin-bottom: 8px;
+  }
+
+  .footer-link {
+    color: #007AFF;
+    font-size: 12px;
+  }
+}
